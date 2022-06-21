@@ -1,0 +1,11 @@
+@import "../../styles/colors";
+
+.ControlPanel {
+    padding: 10px;
+    // border: 1px solid darkgray;
+    box-shadow: 0 0 5px $lightgray;
+    border-radius: 20px;
+    margin: 10px;
+    background: $gray;
+    height: 100%;
+}

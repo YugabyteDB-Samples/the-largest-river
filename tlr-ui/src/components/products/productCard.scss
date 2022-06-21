@@ -1,0 +1,17 @@
+@import "../../styles/colors";
+
+.card {
+    .card-title {
+        color: $navy;
+        text-decoration: underline;
+        font-size: 1em;
+    }
+    .card-text {
+        font-size: 0.8em;
+    }
+    .BsCartPlus {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+    }
+}

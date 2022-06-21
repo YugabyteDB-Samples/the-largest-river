@@ -1,0 +1,17 @@
+@import "../../styles/colors";
+.pagination {
+    margin: 10px;
+    a {
+        color: $navy;
+    }
+
+    .page-item {
+        &.active {
+            span {
+                background-color: $navy;
+                border: $navy;
+            }
+        }
+    }
+}
+
