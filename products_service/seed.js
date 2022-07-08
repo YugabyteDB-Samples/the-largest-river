@@ -1,14 +1,66 @@
+// Creating database if it doesn't exist
+require("dotenv").config();
+// const Client = require("pg").Client;
+// const fs = require("fs");
+// const config = {
+//   database: "yugabyte",
+//   host: process.env.DATABASE_HOST_2,
+//   user: process.env.DATABASE_USERNAME_2,
+//   password: process.env.DATABASE_PASSWORD_2,
+//   port: 5433,
+//   // this object will be passed to the TLSSocket constructor
+//   ssl: {
+//     rejectUnauthorized: false,
+//     ca: fs.readFileSync(process.env.DATABASE_SEED_CERT_PATH_2).toString(),
+//   },
+// };
+// const client = new Client(config);
+// client.connect(async (err) => {
+//   if (err) {
+//     console.error("error connecting", err.stack);
+//   } else {
+//     console.log("connected");
+//     client.query(
+//       `CREATE DATABASE "${process.env.DATABASE_NAME}"`,
+//       (err, res) => {
+//         console.log(err, res);
+//         client.end();
+//       }
+//     );
+//   }
+// });
+
 const sampleProducts = require("./sample-data/products.json");
 const { Product, ProductRecommendation } = require("./models");
-const { sequelize } = require("./db");
+let { changeDB } = require("./db.js");
+let models, setModels, sequelize;
+changeDB(
+  process.env.DATABASE_HOST_2,
+  process.env.DATABASE_USERNAME_2,
+  process.env.DATABASE_PASSWORD_2,
+  process.env.DATABASE_SEED_CERT_PATH_2
+)
+  .then((sequelizeInstance) => {
+    require("./models.js").setModels(sequelizeInstance);
+    models = require("./models").models;
+    // console.log("this is the sequelize instance", sequelizeInstance);
+    sequelize = sequelizeInstance;
+  })
+  .then(() => {
+    createTableAndInsert().then(function () {
+      console.log("Created tables and records");
+      //   fetchAllRows();
+      process.exit(0);
+    });
+  });
 async function createTableAndInsert() {
   //creating a table "users"
 
-  //   await Product.sync({ force: true });
+  //   await models.Product.sync({ force: true });
 
   await sequelize.sync({ force: true });
 
-  await Product.bulkCreate(sampleProducts.products, {
+  await models.Product.bulkCreate(sampleProducts.products, {
     ignoreDuplicates: true,
   });
 
@@ -36,7 +88,9 @@ async function createTableAndInsert() {
     }
   }
 
-  await ProductRecommendation.bulkCreate(prodRecs, { ignoreDuplicates: true });
+  await models.ProductRecommendation.bulkCreate(prodRecs, {
+    ignoreDuplicates: true,
+  });
 
   //   await Promise.all(prodRecsPromises);
 
@@ -44,7 +98,7 @@ async function createTableAndInsert() {
   // for (let i = 0; i < sampleProducts.products.length; i++) {
   //   const p = sampleProducts.products[i];
   //   try {
-  //     await Product.create(p);
+  //     await models.Product.create(p);
   //   } catch (e) {
   //     console.error("ERROR IN CREATING PRODUCT: ", e);
   //   }
@@ -61,9 +115,3 @@ async function createTableAndInsert() {
 //   const users = await User.findAll({ raw: true });
 //   // console.log(users);
 // }
-
-createTableAndInsert().then(function () {
-  console.log("Created tables and records");
-  //   fetchAllRows();
-  process.exit(0);
-});

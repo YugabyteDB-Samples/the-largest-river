@@ -1,0 +1,6 @@
+version: '3.9'
+services:
+  rev-proxy:
+      build: ./rev-proxy
+      ports:
+        - "80:80"

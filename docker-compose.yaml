@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  frontend: 
+    build: ./tlr-ui
+    environment:
+      - PORT=3000
+    ports: 
+    - "3000:3000"
+    volumes:
+      - ./tlr-ui/:/app
+      - /app/node_modules
+  api:
+    build: ./products_service
+    environment:
+      - PORT=8000
+    ports: 
+      - "8000:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  api-asia:
+    build: ./products_service
+    environment:
+      - PORT=8000
+    ports: 
+      - "8001:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  rev-proxy:
+      build: ./rev-proxy
+      ports:
+        - "80:80"

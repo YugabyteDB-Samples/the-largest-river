@@ -1,9 +1,9 @@
 const { Sequelize } = require("sequelize-yugabytedb");
 const fs = require("fs");
 
-async function changeDB(host, username, password, certPath) {
+async function addDatabaseConnection(host, username, password, certPath) {
   console.log(`Changing DB HOST TO: ${host}`);
-  // console.log(host, username, password, certPath);
+  console.log(host, username, password, certPath);
 
   try {
     const cert = fs.readFileSync(certPath).toString();
@@ -35,4 +35,4 @@ async function changeDB(host, username, password, certPath) {
   }
 }
 
-module.exports = { changeDB };
+module.exports = { addDatabaseConnection };

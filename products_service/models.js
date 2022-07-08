@@ -53,6 +53,8 @@ function setModels(sequelize) {
     through: "product_recommendation",
     as: "recommendations",
   });
+
+  return models;
 }
 
 module.exports = { models, setModels };

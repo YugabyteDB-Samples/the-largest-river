@@ -9,14 +9,13 @@ export default function Home() {
   const [product, setProduct] = useState();
   const getProduct = useCallback(async () => {
     try {
-      let time = Date.now();
       const json = await getJSON(`/api/products/${productId}/recommendations`);
-      time = Date.now() - time;
       const data = json.data;
       const queryLogs = json.queryLogs;
+      const explainAnalyzeResults = json.explainAnalyzeResults;
 
       if (queryLogs) {
-        handleQueryLogs("Latency: " + time + " " + queryLogs);
+        handleQueryLogs(queryLogs, explainAnalyzeResults);
       }
 
       setProduct(data);

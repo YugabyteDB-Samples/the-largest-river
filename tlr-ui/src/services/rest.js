@@ -1,6 +1,12 @@
 // options: { logger: logHandlerFunction }
-export default async function getJSON(url, options) {
+export default async function getJSON(baseURL, options) {
   try {
+    let url = new URL(`http://localhost${baseURL}`);
+    if (options) {
+      for (const key in options) {
+        url.searchParams.append(key, options[key]);
+      }
+    }
     const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
