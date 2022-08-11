@@ -45,11 +45,14 @@ declare module '@material-ui/core/styles/createPalette' {
     orange: string;
     yellow: string;
     indigo: string;
+    purple1: string;
   }
 
   // add more text color options
   interface TypeText {
     highlighted: string;
+    primaryPurple: string;
+    secondaryPurple: string;
   }
 
   interface ChartColors {

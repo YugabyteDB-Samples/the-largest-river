@@ -1,11 +1,9 @@
 const { DataTypes } = require("sequelize-yugabytedb");
 //Defining a model 'user'
 
-const models = { User: null, Product: null, ProductRecommendation: null };
-// let User, Product, ProductRecommendation;
-
 function setModels(sequelize) {
-  models.User = sequelize.define("user", {
+  sequelize.models = {};
+  sequelize.models.User = sequelize.define("user", {
     user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -28,33 +26,75 @@ function setModels(sequelize) {
   //   categories: [["Books"]],
   // };
   //Defining a model 'user'
-  models.Product = sequelize.define("product", {
+  sequelize.models.Product = sequelize.define("product", {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     title: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
     },
-    description: {
-      type: DataTypes.TEXT,
+    country: {
+      type: DataTypes.STRING,
+    },
+    language: {
+      type: DataTypes.STRING,
+    },
+    author: {
+      type: DataTypes.STRING,
+    },
+    imageLink: {
+      type: DataTypes.STRING,
+    },
+    pages: {
+      type: DataTypes.INTEGER,
+    },
+    year: {
+      type: DataTypes.INTEGER,
     },
     price: {
       type: DataTypes.FLOAT,
     },
-    imUrl: {
-      type: DataTypes.STRING,
+  });
+
+  // "author": "Dante Alighieri",
+  // "country": "Italy",
+  // "imageLink": "images/the-divine-comedy.jpg",
+  // "language": "Italian",
+  // "link": "https://en.wikipedia.org/wiki/Divine_Comedy\n",
+  // "pages": 928,
+  // "title": "The Divine Comedy",
+  // "year": 1315
+
+  // sequelize.models.ProductRecommendation = sequelize.define("product_recommendation", {});
+
+  // sequelize.models.Product.belongsToMany(sequelize.models.Product, {
+  //   through: "product_recommendation",
+  //   as: "recommendations",
+  // });
+
+  sequelize.models.Order = sequelize.define(
+    "Order",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      total: {
+        type: DataTypes.FLOAT,
+      },
+      products: {
+        type: DataTypes.STRING,
+      },
     },
-  });
+    {
+      tableName: "Order",
+    }
+  );
 
-  models.ProductRecommendation = sequelize.define("product_recommendation", {});
-
-  models.Product.belongsToMany(models.Product, {
-    through: "product_recommendation",
-    as: "recommendations",
-  });
-
-  return models;
+  return sequelize.models;
 }
 
-module.exports = { models, setModels };
+module.exports = { setModels };

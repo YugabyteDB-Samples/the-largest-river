@@ -1,9 +1,9 @@
-import getJSON, { postJSON } from "../../services/rest";
-import { MenuItem } from "@material-ui/core";
-import { YBSelect } from "../../yugabyted-ui/components/YBSelect/YBSelect";
+import getJSON from "../../services/rest";
+import { Box, MenuItem, Typography } from "@material-ui/core";
+import { YBDropdown } from "../../yugabyted-ui/components/YBDropdown/YBDropdown";
 import { useContext, useEffect, useState } from "react";
-import AppContext from "../../AppContext";
-import { useSearchParams } from "react-router-dom";
+import AppContext from "../../contexts/AppContext";
+import { ReactComponent as CaretDownIcon } from "../../yugabyted-ui/assets/caret-down.svg";
 
 import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => {
@@ -11,12 +11,14 @@ const useStyles = makeStyles((theme) => {
     databseConfig: {
       display: "flex",
       flexWrap: "wrap",
-      padding: "10px",
+      padding: theme.spacing(2),
       alignItems: "center",
       color: theme.palette.grey[700],
+      borderBottom: `1px solid ${theme.palette.grey[200]}`,
     },
     headingWrapper: {
       marginRight: theme.spacing(5),
+      flexGrow: 0,
     },
     heading: {
       marginTop: 0,
@@ -24,11 +26,28 @@ const useStyles = makeStyles((theme) => {
     dbSelect: {
       minWidth: "250px",
     },
+    dropdown: {
+      cursor: "pointer",
+      minWidth: "400px",
+    },
+    dropdownBox: {
+      minWidth: "400px",
+      border: `1px solid ${theme.palette.grey[300]}`,
+      borderRadius: "10px",
+      padding: theme.spacing(1),
+      display: "flex",
+      justifyContent: "space-between",
+    },
+    dropdownMenuItem: {
+      flexDirection: "column",
+      height: "auto",
+      minWidth: "400px",
+      alignItems: "flex-start",
+    },
   };
 });
 export default function DatabaseConfig({ databases, setDatabases }) {
   const classes = useStyles();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { currentDatabase, setCurrentDatabase } = useContext(AppContext);
 
   const getDatabases = async () => {
@@ -41,41 +60,52 @@ export default function DatabaseConfig({ databases, setDatabases }) {
   };
   useEffect(() => {
     getDatabases();
-    if (searchParams.has("database")) {
-      setCurrentDatabase(searchParams.get("database"));
-    }
   }, []);
 
-  const handleDatabaseChanged = async (e) => {
-    e.preventDefault();
-    setCurrentDatabase(e.target.value);
-    const params = {};
-    for (const [key, val] of searchParams.entries()) {
-      params[key] = val;
-    }
-    setSearchParams({ ...params, database: e.target.value });
+  const handleDatabaseChanged = async (val) => {
+    setCurrentDatabase(val);
+    localStorage.setItem("currentDatabase", val);
   };
 
   return (
     <div className={classes.databseConfig}>
       <div className={classes.headingWrapper}>
-        <h3 className={classes.heading}>Cluster View</h3>
-        <div>
-          Select a YugabyteDB cluster to use as the primary database for the
-          Store.
-        </div>
+        <Typography className={classes.heading} variant="h5">
+          Cluster View
+        </Typography>
       </div>
-      <YBSelect
-        value={currentDatabase}
-        onChange={handleDatabaseChanged}
-        className={classes.dbSelect}
+
+      <YBDropdown
+        origin={
+          <Box
+            display="flex"
+            alignItems="center"
+            className={classes.dropdownBox}
+          >
+            <Typography variant="body2" color="textPrimary">
+              {databases[currentDatabase - 1]?.label}
+            </Typography>
+            <CaretDownIcon />
+          </Box>
+        }
+        position={"bottom"}
+        growDirection={"right"}
+        className={classes.dropdown}
       >
-        {databases.map(({ id, label }) => (
-          <MenuItem value={id} key={id}>
-            {label}
+        {databases.map(({ id, label, sublabel }) => (
+          <MenuItem
+            value={id}
+            key={id}
+            className={classes.dropdownMenuItem}
+            onClick={() => handleDatabaseChanged(id)}
+          >
+            <Typography variant="body2">{label}</Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              {sublabel}
+            </Typography>
           </MenuItem>
         ))}
-      </YBSelect>
+      </YBDropdown>
     </div>
   );
 }

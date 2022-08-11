@@ -68,7 +68,9 @@ export const colors = {
     default: '#F7FAFC',
     paper: '#FFFFFF',
     purpleGradient1: '#091440',
-    purpleGradient2: '#30307F'
+    purpleGradient2: '#30307F',
+    purple: '#7879F1',
+    purple1: '#5D5FEF'
   } as TypeBackground,
   // non-semantic common colors for things like charts, progress bars, etc
   common: {
@@ -76,11 +78,13 @@ export const colors = {
     white: '#FFFFFF',
     blue: '#36B8F5',
     magenta: '#D74FEE',
-    purple: '#BB43BC',
+    // purple: '#BB43BC',
     cyan: '#43BFC2',
     orange: '#FF6E42',
     yellow: '#FFFAC8',
-    indigo: '#5E60F0'
+    indigo: '#5E60F0',
+    purple: '#7879F1',
+    purple1: '#5D5FEF'
   } as CommonColors,
   chartStroke: {
     cat1: '#30307F',

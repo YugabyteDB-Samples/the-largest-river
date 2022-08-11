@@ -1,11 +1,14 @@
-import { MenuItem } from "@material-ui/core";
+import { MenuItem, Typography } from "@material-ui/core";
 import { YBSelect } from "../../yugabyted-ui/components/YBSelect/YBSelect";
 import { useContext, useState } from "react";
-import AppContext from "../../AppContext";
+import AppContext from "../../contexts/AppContext";
 import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles((theme) => {
   return {
     headingWrapper: {
+      padding: theme.spacing(2),
+      display: "flex",
+      flexDirection: "column",
       color: theme.palette.grey[600],
     },
     heading: {
@@ -13,7 +16,7 @@ const useStyles = makeStyles((theme) => {
     },
     trafficLocationSelect: {
       minWidth: "250px",
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(2),
     },
   };
 });
@@ -25,6 +28,7 @@ export default function TrafficLocation() {
     e.preventDefault();
     try {
       setTrafficLocation(e.target.value);
+      localStorage.setItem("trafficLocation", e.target.value);
     } catch (e) {
       console.log("error updating traffic location", e);
     }
@@ -32,7 +36,9 @@ export default function TrafficLocation() {
 
   return (
     <div className={classes.headingWrapper}>
-      <h4 className={classes.heading}>Your Location</h4>
+      <Typography variant="button" className={classes.heading}>
+        Phone Location
+      </Typography>
       <YBSelect
         value={trafficLocation}
         onChange={handleTrafficLocationChanged}

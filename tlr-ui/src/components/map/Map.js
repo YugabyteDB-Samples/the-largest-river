@@ -1,6 +1,5 @@
-import "./map.scss";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import AppContext from "../../AppContext";
+import AppContext from "../../contexts/AppContext";
 import { v4 as uuidv4 } from "uuid";
 import {
   FeatureGroup,
@@ -15,6 +14,8 @@ import {
 } from "react-leaflet";
 import L, { point } from "leaflet";
 import { makeStyles } from "@material-ui/core";
+import MapPolyLine from "./MapPolyline";
+import ReturnButton from "../return_button/ReturnButton";
 
 let pathColor;
 const useStyles = makeStyles((theme) => {
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => {
 
   return {
     map: {
-      height: "400px",
+      height: "350px",
       flex: "1 1 auto",
     },
   };
@@ -35,7 +36,8 @@ function getIntermediatePoint(lat1, long1, lat2, long2, per) {
   return [lat1 + (lat2 - lat1) * per, long1 + (long2 - long1) * per];
 }
 export default function Map({ databases }) {
-  const pathOptions = { color: pathColor, dashArray: "5,10" };
+  console.log("rendering map");
+
   const classes = useStyles();
   const { currentDatabase, trafficLocation, trafficLocations } =
     useContext(AppContext);
@@ -45,7 +47,6 @@ export default function Map({ databases }) {
   });
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
   const [databaseNodes, setDatabaseNodes] = useState([]);
-  // const map = useMap(null);
   const [map, setMap] = useState(null);
   const featureGroupRef = useRef();
 
@@ -61,25 +62,21 @@ export default function Map({ databases }) {
       return { ...prev, coords: location.coords };
     });
   }, [currentDatabase, databases, trafficLocation]);
-
-  const [polyline, setPolyline] = useState({
-    origin: [51.505, -0.09],
-    percentage: 0,
-    points: [],
-  });
-  const intervalRef = useRef();
   useEffect(() => {
     if (databaseNodes.length === 0) return;
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      setPolyline((prev) => {
-        return {
-          percentage: 0,
-          points: [],
-        };
-      });
+    if (map) {
+      map.fitBounds(featureGroupRef.current.getBounds());
+      const legend = L.control({ position: "bottomleft" });
+
+      legend.onAdd = () => {
+        const div = L.DomUtil.create("div", "info legend");
+        div.style.margin = "0";
+        div.innerHTML = `<div style='display: flex; gap: 5px; align-items: center; background-color: #FFFFFF; opacity: 0.7; border-top: 1px solid #E9EEF2; border-right: 1px solid #E9EEF2; padding: 5px; font-family: ${"Inter"}, sans-serif; font-style: normal; font-size: 11px; font-weight: 500; line-height: 7px; letter-spacing: 0px;'><div style='height: 10px; width: 10px; border-radius: 20px; background-color: green;'></div><div>Primary Node</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: purple;'></div><div>Phone Location</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: yellow;'></div><div>Read Replica</div></div>`;
+        return div;
+      };
+
+      legend.addTo(map);
     }
-    if (map) map.fitBounds(featureGroupRef.current.getBounds());
     const destination = databaseNodes[0].coords;
     const intermediatePoint = getIntermediatePoint(
       trafficOriginMarker.coords[0],
@@ -89,33 +86,7 @@ export default function Map({ databases }) {
       50
     );
     setMapCenter(intermediatePoint);
-    intervalRef.current = setInterval(() => {
-      setPolyline(({ percentage, points }) => {
-        const newCoords = getIntermediatePoint(
-          trafficOriginMarker.coords[0],
-          trafficOriginMarker.coords[1],
-          destination[0],
-          destination[1],
-          percentage
-        );
-
-        points.push(newCoords);
-
-        if (percentage + 5 > 100) {
-          points = [];
-          percentage = 0;
-        } else {
-          percentage = percentage + 5;
-        }
-
-        return { destination, points, percentage };
-      });
-    }, 300);
-    return () => {
-      clearInterval(intervalRef.current);
-    };
   }, [databaseNodes, trafficOriginMarker]);
-
   // useMemo prevents gif from rerendering
   // const logoIcon = useMemo(
   //   () =>
@@ -220,7 +191,11 @@ export default function Map({ databases }) {
             );
           })}
       </FeatureGroup>
-      <Polyline pathOptions={pathOptions} positions={[polyline.points]} />
+      <MapPolyLine
+        databaseNodes={databaseNodes}
+        trafficOriginMarker={trafficOriginMarker}
+        getIntermediatePoint={getIntermediatePoint}
+      />
     </MapContainer>
   );
 }

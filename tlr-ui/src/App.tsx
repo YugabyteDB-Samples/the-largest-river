@@ -1,11 +1,11 @@
 import "leaflet/dist/leaflet.css";
-import { BrowserRouter as Router, Navigate, Routes, Route } from "react-router-dom";
-import Products from "./pages/products/Products";
+import { Routes, Route } from "react-router-dom";
+import Main from "./pages/main/Main";
+import Landing from "./pages/landing/Landing";
 import ErrorPage from "./pages/error/ErrorPage";
-import ControlPanel from "./pages/control_panel/ControlPanel";
-import { AppProvider } from "./AppContext";
+import { AppProvider } from "./contexts/AppContext";
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
-import { mainTheme } from './yugabyted-ui/theme/mainTheme'
+import { tlrTheme } from './yugabyted-ui/theme/tlrTheme'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     // overflow: "hidden",
     // boxSizing: "border-box",
     height: "100vh"
+  },
+  container: {
+    height: "100%"
   }
 }));
 
@@ -25,25 +28,18 @@ function App() {
   return (
     <div>
       <AppProvider>
-      <ThemeProvider theme={mainTheme}>
+      <ThemeProvider theme={tlrTheme}>
         {/* <BackgroundImage> */}
         <CssBaseline />
-            <Router>
-            <div className={classes.root}>
-              <Grid container>
-                <Grid item xs={12} md={5} lg={4}>
+          <div className={classes.root}>
+            <Grid container className={classes.container}>
                 <Routes>
-                  <Route path="/products/*"element={<Products />}></Route>
-                  <Route path="/"element={<Navigate replace to="/products" />}></Route>
+                  <Route path="/" element={<Landing />}></Route>
+                  <Route path="/store/*" element={<Main />}></Route>
                   <Route path="*" element={<ErrorPage />}></Route>
-                  </Routes>
-                </Grid>
-                <Grid item xs={12} md={7} lg={8}>
-                  <ControlPanel />
-                </Grid>
-              </Grid>
-            </div>
-            </Router>
+                </Routes>
+            </Grid>
+          </div>
         </ThemeProvider>
       </AppProvider>
     </div>

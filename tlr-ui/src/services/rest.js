@@ -1,6 +1,7 @@
 // options: { logger: logHandlerFunction }
 export default async function getJSON(baseURL, options) {
   try {
+    console.log(process.env.NODE_ENV);
     let url = new URL(`http://localhost${baseURL}`);
     if (options) {
       for (const key in options) {
@@ -17,12 +18,19 @@ export default async function getJSON(baseURL, options) {
     return json;
   } catch (e) {
     console.log(e);
+    throw new Error(e);
   }
 }
 // Example POST method implementation:
-export async function postJSON(url = "", data = {}) {
+export async function postJSON(baseURL = "", data = {}, options) {
   // Default options are marked with *
   try {
+    let url = new URL(`http://localhost${baseURL}`);
+    if (options) {
+      for (const key in options) {
+        url.searchParams.append(key, options[key]);
+      }
+    }
     const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
@@ -39,5 +47,6 @@ export async function postJSON(url = "", data = {}) {
     return response.json(); // parses JSON response into native JavaScript objects
   } catch (e) {
     console.log(e);
+    throw new Error(e);
   }
 }
