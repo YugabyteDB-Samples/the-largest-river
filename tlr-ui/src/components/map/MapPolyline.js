@@ -1,17 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Polyline } from "react-leaflet";
-import { makeStyles } from "@material-ui/core";
-let pathColor;
-const useStyles = makeStyles((theme) => {
-  //TODO: better way to set styles which aren't applied via CSS classes?
-  pathColor = theme.palette.grey[600];
-});
+
 export default function MapPolyLine(props) {
-  useStyles();
   const { trafficOriginMarker, databaseNodes, getIntermediatePoint } = props;
   const pathOptions = {
-    color: pathColor,
-    dashArray: "5,10",
+    color: "#B7C3CB",
+    dashArray: "3,5",
+    weight: "2",
   };
   const [polyline, setPolyline] = useState({
     origin: trafficOriginMarker.coords,
@@ -45,7 +40,7 @@ export default function MapPolyLine(props) {
           percentage
         );
         points.push(newCoords);
-        if (percentage + 5 > 100) {
+        if (percentage + 5 > 105) {
           points = [];
           percentage = 0;
         } else {
@@ -53,7 +48,7 @@ export default function MapPolyLine(props) {
         }
         return { destination, points, percentage };
       });
-    }, 300);
+    }, 200);
     return () => {
       clearInterval(intervalRef.current);
     };

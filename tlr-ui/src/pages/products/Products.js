@@ -49,13 +49,10 @@ export default function Products() {
         database: currentDatabase,
         showExecutionPlan,
       });
-      const data = json.data;
-      const page = json.page;
-      const queryLogs = json.queryLogs;
-      const explainAnalyzeResults = json.explainAnalyzeResults;
+      const { data, page, queryLogs, explainAnalyzeResults, latency } = json;
 
       if (queryLogs) {
-        handleQueryLogs(queryLogs, explainAnalyzeResults);
+        handleQueryLogs(queryLogs, explainAnalyzeResults, latency);
       }
 
       setProducts((prevProducts) => {
@@ -85,7 +82,7 @@ export default function Products() {
             </Typography>
             <InfiniteScroll
               pageStart={1}
-              hasMore={true}
+              hasMore={productsState.currentPage <= 10}
               loadMore={getInfiniteScrollProducts}
               loader={
                 <div className={classes.loader} key={0}>

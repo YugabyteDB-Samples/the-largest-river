@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import React, { useContext } from "react";
 import AppContext from "../../contexts/AppContext";
 import { mainTheme } from "../../yugabyted-ui/theme/mainTheme";
+import { ReactComponent as LoadingCircles } from "../../yugabyted-ui/assets/Default-Loading-Circles.svg";
 
 const useStyles = makeStyles((theme) => ({
   trafficLocation: {
@@ -34,37 +35,47 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     overflow: "scroll",
   },
+  loadingCircles: {
+    height: "40px",
+    width: "40px",
+  },
 }));
 
 function Main() {
-  const { productsInCart, setProductsInCart } = useContext(AppContext);
+  const { productsInCart, loading } = useContext(AppContext);
   const classes = useStyles();
   return (
-    <React.Fragment>
-      <Grid item xs={12} md={5} lg={4}>
-        <Phone>
-          <BookstoreHeader count={productsInCart.length} />
-          <div className={classes.phoneContent}>
-            <Routes>
-              <Route path="/products/*" element={<Products />}></Route>
-              <Route path="/cart" element={<Cart />}></Route>
-              <Route
-                path="/confirmation/:confirmationId"
-                element={<Confirmation />}
-              ></Route>
-            </Routes>
-          </div>
-          <div className={classes.trafficLocation}>
-            <TrafficLocation />
-          </div>
-        </Phone>
-      </Grid>
-      <Grid item xs={12} md={7} lg={8}>
-        <ThemeProvider theme={mainTheme}>
-          <ControlPanel />
-        </ThemeProvider>
-      </Grid>
-    </React.Fragment>
+    <>
+      {loading ? (
+        <LoadingCircles className={classes.loadingCircles} />
+      ) : (
+        <>
+          <Grid item xs={12} md={5} lg={4}>
+            <Phone>
+              <BookstoreHeader count={productsInCart.length} />
+              <div className={classes.phoneContent}>
+                <Routes>
+                  <Route path="/products/*" element={<Products />}></Route>
+                  <Route path="/cart" element={<Cart />}></Route>
+                  <Route
+                    path="/confirmation/:confirmationId"
+                    element={<Confirmation />}
+                  ></Route>
+                </Routes>
+              </div>
+              <div className={classes.trafficLocation}>
+                <TrafficLocation />
+              </div>
+            </Phone>
+          </Grid>
+          <Grid item xs={12} md={7} lg={8}>
+            <ThemeProvider theme={mainTheme}>
+              <ControlPanel />
+            </ThemeProvider>
+          </Grid>
+        </>
+      )}
+    </>
   );
 }
 

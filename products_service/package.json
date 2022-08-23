@@ -5,21 +5,24 @@
   "main": "index.js",
   "scripts": {
     "preinstall": "npm i nodemon -g",
-    "start": "nodemon index.js",
+    "start": "NODE_ENV=development nodemon index.js",
+    "production": "NODE_ENV=production nodemon index.js",
+    "seed": "NODE_ENV=seed node seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.7",
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "node-fetch": "^3.2.10",
-    "nodemon": "^2.0.16",
     "pg": "^8.7.3",
     "sequelize-yugabytedb": "^1.0.6"
   },
   "devDependencies": {
+    "nodemon": "^2.0.16",
     "dotenv": "^16.0.1"
   }
 }

@@ -46,27 +46,17 @@ const useStyles = makeStyles((theme) => {
     },
   };
 });
-export default function DatabaseConfig({ databases, setDatabases }) {
+export default function DatabaseConfig() {
   const classes = useStyles();
-  const { currentDatabase, setCurrentDatabase } = useContext(AppContext);
-
-  const getDatabases = async () => {
-    try {
-      const db = await getJSON("/api/databases");
-      setDatabases(db.databases);
-    } catch (e) {
-      console.log("error in fetching current database", e);
-    }
-  };
-  useEffect(() => {
-    getDatabases();
-  }, []);
+  const { currentDatabase, setCurrentDatabase, databases } =
+    useContext(AppContext);
 
   const handleDatabaseChanged = async (val) => {
     setCurrentDatabase(val);
     localStorage.setItem("currentDatabase", val);
   };
 
+  const label = databases.find((db) => db.id === currentDatabase)?.label;
   return (
     <div className={classes.databseConfig}>
       <div className={classes.headingWrapper}>
@@ -83,7 +73,7 @@ export default function DatabaseConfig({ databases, setDatabases }) {
             className={classes.dropdownBox}
           >
             <Typography variant="body2" color="textPrimary">
-              {databases[currentDatabase - 1]?.label}
+              {label}
             </Typography>
             <CaretDownIcon />
           </Box>

@@ -6,26 +6,54 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Polyline,
   Popup,
-  useMap,
   CircleMarker,
-  Circle,
+  ZoomControl,
 } from "react-leaflet";
-import L, { point } from "leaflet";
+import L from "leaflet";
 import { makeStyles } from "@material-ui/core";
 import MapPolyLine from "./MapPolyline";
-import ReturnButton from "../return_button/ReturnButton";
 
-let pathColor;
+import OriginLocationLegendIcon from "./ellipse.svg";
+import OriginLocationIcon from "./origin-location.svg";
+
 const useStyles = makeStyles((theme) => {
-  //TODO: better way to set styles which aren't applied via CSS classes?
-  pathColor = theme.palette.grey[600];
-
   return {
+    mapWrapper: {
+      position: "relative",
+      overflow: "hidden",
+      borderRadius: "0 0 10px 10px",
+
+      "& .leaflet-div-icon": {
+        background: "none",
+        border: "none",
+        pointerEvents: "none",
+      },
+    },
     map: {
       height: "350px",
       flex: "1 1 auto",
+    },
+    legend: {
+      display: "flex",
+      position: "absolute",
+      bottom: "-1px",
+      left: "-1px",
+      zIndex: 9999,
+      gap: "5px",
+      alignItems: "center",
+      backgroundColor: "rgba(255,255,255, 0.7)",
+      borderTop: "1px solid #E9EEF2",
+      borderRight: "1px solid #E9EEF2",
+      padding: "5px",
+      fontFamily: '"Inter", sans-serif',
+      fontStyle: "normal",
+      fontSize: "11px",
+      fontWeight: 500,
+      lineHeight: "7px",
+      letterSpacing: "0px",
+      border: "1px solid #D7DEE4",
+      borderRadius: "0 0 0 10px",
     },
   };
 });
@@ -35,48 +63,62 @@ function getIntermediatePoint(lat1, long1, lat2, long2, per) {
   per = per / 100;
   return [lat1 + (lat2 - lat1) * per, long1 + (long2 - long1) * per];
 }
-export default function Map({ databases }) {
+export default function Map() {
   console.log("rendering map");
 
   const classes = useStyles();
-  const { currentDatabase, trafficLocation, trafficLocations } =
-    useContext(AppContext);
+  const {
+    currentDatabase,
+    databases,
+    databaseNodes,
+    trafficLocation,
+    trafficLocations,
+  } = useContext(AppContext);
   const [trafficOriginMarker, setTrafficOriginMarker] = useState({
     coords: [51.505, -0.09],
     radius: 5,
   });
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
-  const [databaseNodes, setDatabaseNodes] = useState([]);
   const [map, setMap] = useState(null);
   const featureGroupRef = useRef();
 
+  const MarkerWithText = ({ text, position, textColor }) => {
+    const html = `<div style="width: 100px; background: none; position: relative; left: 20px; bottom: 5px; color: ${textColor}; display:${
+      text ? "" : "none"
+    };">${text}</div>`;
+    const textIcon = L.divIcon({ html: html });
+
+    return <Marker position={position} icon={textIcon} />;
+  };
   useEffect(() => {
-    if (databases.length === 0) return;
-    const currentdb = databases[currentDatabase - 1];
-    const coords = currentdb.coords.split("/").map((coord) => parseInt(coord));
-    setDatabaseNodes([{ coords: coords, id: currentdb.id }]);
+    if (map) {
+      // const legend = L.control({ position: "bottomleft" });
+      // legend.onAdd = () => {
+      //   const div = L.DomUtil.create("div", "info legend");
+      //   div.style.margin = "0";
+      //   div.innerHTML = `<div style='display: flex; gap: 5px; align-items: center; background-color: #FFFFFF; opacity: 0.7; border-top: 1px solid #E9EEF2; border-right: 1px solid #E9EEF2; padding: 5px; font-family: ${"Inter"}, sans-serif; font-style: normal; font-size: 11px; font-weight: 500; line-height: 7px; letter-spacing: 0px;'><div style='height: 10px; width: 10px; border-radius: 20px; background-color: #13a868;'></div><div>Primary Node</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: #7879F1;'></div><div>Phone Location</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: yellow;'></div><div>Read Replica</div></div>`;
+      //   return div;
+      // };
+      // legend.addTo(map);
+    }
+  }, [map]);
+
+  useEffect(() => {
     setTrafficOriginMarker((prev) => {
       const location = trafficLocations.find(
-        (loc) => loc.id === trafficLocation
+        (loc) => loc.value === trafficLocation
       );
-      return { ...prev, coords: location.coords };
+
+      return { ...prev, coords: location.coords, label: location.label };
     });
-  }, [currentDatabase, databases, trafficLocation]);
+  }, [trafficLocation]);
+
   useEffect(() => {
     if (databaseNodes.length === 0) return;
     if (map) {
       map.fitBounds(featureGroupRef.current.getBounds());
-      const legend = L.control({ position: "bottomleft" });
-
-      legend.onAdd = () => {
-        const div = L.DomUtil.create("div", "info legend");
-        div.style.margin = "0";
-        div.innerHTML = `<div style='display: flex; gap: 5px; align-items: center; background-color: #FFFFFF; opacity: 0.7; border-top: 1px solid #E9EEF2; border-right: 1px solid #E9EEF2; padding: 5px; font-family: ${"Inter"}, sans-serif; font-style: normal; font-size: 11px; font-weight: 500; line-height: 7px; letter-spacing: 0px;'><div style='height: 10px; width: 10px; border-radius: 20px; background-color: green;'></div><div>Primary Node</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: purple;'></div><div>Phone Location</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: yellow;'></div><div>Read Replica</div></div>`;
-        return div;
-      };
-
-      legend.addTo(map);
     }
+
     const destination = databaseNodes[0].coords;
     const intermediatePoint = getIntermediatePoint(
       trafficOriginMarker.coords[0],
@@ -107,95 +149,105 @@ export default function Map({ databases }) {
     })
   );
 
-  // DivIcons are lightweight
-  //   const svgIcon = L.divIcon({
-  //     html: `
-  //       <svg
-  //         width="24"
-  //         height="40"
-  //         viewBox="0 0 100 100"
-  //         version="1.1"
-  //         preserveAspectRatio="none"
-  //         xmlns="http://www.w3.org/2000/svg"
-  //       >
-  //         <path d="M0 0 L50 100 L100 0 Z" fill="#7A8BE7"></path>
-  //       </svg>`,
-  //     className: "",
-  //     iconSize: [24, 40],
-  //     iconAnchor: [12, 40],
-  //   });
-  //   var Stadia_AlidadeSmooth = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-  // maxZoom: 20,
-  // attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-  // });
-  return (
-    <MapContainer
-      center={mapCenter}
-      zoom={1}
-      scrollWheelZoom={true}
-      className={classes.map}
-      whenCreated={setMap}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-      />
-      <FeatureGroup ref={featureGroupRef}>
-        {trafficOriginMarker && (
-          <CircleMarker
-            key={uuidv4()}
-            center={trafficOriginMarker.coords}
-            radius={trafficOriginMarker.radius}
-            color="navy"
-            opacity="0.5"
-            weight="10"
-            fill="true"
-            fillColor="navy"
-            fillOpacity="1"
-          >
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-              {trafficOriginMarker.radius}
-            </Popup>
-          </CircleMarker>
-        )}
-        {/* <Marker position={[1.29027, 103.851959]} icon={logoIcon}>
-        <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker> */}
+  const originLocationIcon = useMemo(() =>
+    L.icon({
+      iconSize: [19, 25],
+      iconAnchor: [12, 12],
+      iconUrl: OriginLocationIcon,
+    })
+  );
 
-        {databaseNodes &&
-          databaseNodes.map((node) => {
-            return (
-              <CircleMarker
+  return (
+    <div className={classes.mapWrapper}>
+      <MapContainer
+        center={mapCenter}
+        zoom={1}
+        zoomControl={false}
+        scrollWheelZoom={true}
+        className={classes.map}
+        whenCreated={setMap}
+      >
+        <ZoomControl position="bottomright"></ZoomControl>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        />
+        <FeatureGroup ref={featureGroupRef}>
+          {trafficOriginMarker && (
+            <div key={uuidv4()}>
+              <Marker
                 key={uuidv4()}
-                center={node.coords}
-                radius={5}
-                color="green"
-                opacity="0.5"
-                weight="10"
-                fill="true"
-                fillColor="green"
-                fillOpacity="1"
+                position={trafficOriginMarker.coords}
+                icon={originLocationIcon}
               >
                 <Popup>
                   A pretty CSS3 popup. <br /> Easily customizable.
                 </Popup>
-              </CircleMarker>
-              // <Marker position={node.coords} icon={dbIcon} key={node.id}>
-              //   <Popup>
-              //     A pretty CSS3 popup. <br /> Easily customizable.
-              //   </Popup>
-              // </Marker>
-            );
-          })}
-      </FeatureGroup>
-      <MapPolyLine
-        databaseNodes={databaseNodes}
-        trafficOriginMarker={trafficOriginMarker}
-        getIntermediatePoint={getIntermediatePoint}
-      />
-    </MapContainer>
+              </Marker>
+              <MarkerWithText
+                key={uuidv4()}
+                text={trafficOriginMarker.label}
+                position={trafficOriginMarker.coords}
+                textColor={"#5D5FEF"}
+              />
+            </div>
+          )}
+
+          {databaseNodes &&
+            databaseNodes.map((node) => {
+              return (
+                <div key={uuidv4()}>
+                  <CircleMarker
+                    center={node.coords}
+                    radius={5}
+                    color="#13A868"
+                    opacity="0.2"
+                    weight="10"
+                    fill="true"
+                    fillColor="#13A868"
+                    fillOpacity="1"
+                  >
+                    <Popup>
+                      A pretty CSS3 popup. <br /> Easily customizable.
+                    </Popup>
+                  </CircleMarker>
+                  <MarkerWithText
+                    text={node.label}
+                    position={node.coords}
+                    textColor={"#13A868"}
+                  />
+                </div>
+              );
+            })}
+        </FeatureGroup>
+        <MapPolyLine
+          databaseNodes={databaseNodes}
+          trafficOriginMarker={trafficOriginMarker}
+          getIntermediatePoint={getIntermediatePoint}
+        />
+      </MapContainer>
+      <div className={classes.legend}>
+        <img src={OriginLocationLegendIcon} height={15} width={10} />
+        <div>Phone Location</div>
+        <div
+          style={{
+            height: "10px",
+            width: "10px",
+            borderRadius: "20px",
+            backgroundColor: "#13a868",
+          }}
+        ></div>
+        <div>Primary Node</div>
+        <div
+          style={{
+            height: "10px",
+            width: "10px",
+            borderRadius: "20px",
+            backgroundColor: "#ED35C5",
+          }}
+        ></div>
+        <div>Read Replica</div>
+      </div>
+    </div>
   );
 }

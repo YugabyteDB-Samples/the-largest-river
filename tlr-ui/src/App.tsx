@@ -9,13 +9,12 @@ import { tlrTheme } from './yugabyted-ui/theme/tlrTheme'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import { useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     flexWrap: "wrap",
-    // overflow: "hidden",
-    // boxSizing: "border-box",
     height: "100vh"
   },
   container: {
@@ -29,7 +28,6 @@ function App() {
     <div>
       <AppProvider>
       <ThemeProvider theme={tlrTheme}>
-        {/* <BackgroundImage> */}
         <CssBaseline />
           <div className={classes.root}>
             <Grid container className={classes.container}>

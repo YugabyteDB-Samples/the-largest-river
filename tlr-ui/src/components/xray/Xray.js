@@ -63,6 +63,7 @@ export default function Xray() {
               {log.explainAnalyzeResults.map((result) => {
                 return <div key={uuidv4()}>{result}</div>;
               })}
+              {log.latency ? <div>Total Latency: {log.latency} ms</div> : ""}
               <br />
               <br />
             </div>

@@ -1,6 +1,6 @@
 import { MenuItem, Typography } from "@material-ui/core";
 import { YBSelect } from "../../yugabyted-ui/components/YBSelect/YBSelect";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import AppContext from "../../contexts/AppContext";
 import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles((theme) => {
@@ -44,8 +44,8 @@ export default function TrafficLocation() {
         onChange={handleTrafficLocationChanged}
         className={classes.trafficLocationSelect}
       >
-        {trafficLocations.map(({ id, label }) => (
-          <MenuItem value={id} key={id}>
+        {trafficLocations.map(({ id, value, label }) => (
+          <MenuItem value={value} key={id}>
             {label}
           </MenuItem>
         ))}

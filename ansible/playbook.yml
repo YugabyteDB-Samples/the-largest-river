@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    server_name: "{{ ansible_default_ipv4.address }}"
+    document_root: /home/
+    app_root: ../products_service/
+  tasks:
+    # - name: Copy website files to the server's document root
+    #   copy:
+    #     src: "{{ app_root }}"
+    #     dest: "{{ document_root }}"
+    #     mode: preserve
+    - name: Copy products service to /home directory
+      synchronize:
+        src: "{{ app_root }}"
+        dest: "{{ document_root }}"
+        rsync_opts:
+          - "--no-motd"
+          - "--exclude=node_modules"
+          - "--rsh='ssh {{ ansible_ssh_common_args }} {{ ansible_ssh_extra_args }}'"
+
+    - name: Install project dependencies
+      command: sudo npm install --ignore-scripts
+      args:
+        chdir: /home/
+
+    - name: Kill Node Server
+      command: sudo pm2 kill
+      args:
+        chdir: /home/
+
+    - name: Restart Node Server
+      shell: NODE_ENV=$NODE_ENV NODE_APP_INSTANCE=$NODE_APP_INSTANCE sudo pm2 start index.js --name node-app
+      args:
+        chdir: /home/

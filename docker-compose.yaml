@@ -1,5 +1,9 @@
 version: '3.9'
 services:
+  rev-proxy:
+      build: ./rev-proxy
+      ports:
+        - "80:80"
   frontend: 
     build: ./tlr-ui
     environment:
@@ -21,7 +25,7 @@ services:
       # - type: bind
       #   source: /Users/bhoyer/certs
       #   target: /app
-  api-asia:
+  api-washington-dc:
     build: ./products_service
     environment:
       - PORT=8000
@@ -33,7 +37,55 @@ services:
       # - type: bind
       #   source: /Users/bhoyer/certs
       #   target: /app
-  rev-proxy:
-      build: ./rev-proxy
-      ports:
-        - "80:80"
+  api-sao-paulo:
+    build: ./products_service
+    environment:
+      - PORT=8000
+    ports: 
+      - "8002:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  api-mumbai:
+    build: ./products_service
+    environment:
+      - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=mumbai
+    ports: 
+      - "8003:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  api-london:
+    build: ./products_service
+    environment:
+      - PORT=8000
+    ports: 
+      - "8004:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  
+  api-sydney:
+    build: ./products_service
+    environment:
+      - PORT=8000
+    ports: 
+      - "8005:8000"
+    volumes:
+      - ./products_service/:/app
+      - /app/node_modules
+      # - type: bind
+      #   source: /Users/bhoyer/certs
+      #   target: /app
+  

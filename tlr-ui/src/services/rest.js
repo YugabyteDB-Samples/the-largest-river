@@ -1,8 +1,13 @@
 // options: { logger: logHandlerFunction }
 export default async function getJSON(baseURL, options) {
   try {
-    console.log(process.env.NODE_ENV);
-    let url = new URL(`http://localhost${baseURL}`);
+    let url = new URL(
+      `http://${
+        process.env.NODE_ENV === "production"
+          ? window.location.hostname
+          : "localhost"
+      }${baseURL}`
+    );
     if (options) {
       for (const key in options) {
         url.searchParams.append(key, options[key]);
@@ -25,7 +30,13 @@ export default async function getJSON(baseURL, options) {
 export async function postJSON(baseURL = "", data = {}, options) {
   // Default options are marked with *
   try {
-    let url = new URL(`http://localhost${baseURL}`);
+    let url = new URL(
+      `http://${
+        process.env.NODE_ENV === "production"
+          ? window.location.hostname
+          : "localhost"
+      }${baseURL}`
+    );
     if (options) {
       for (const key in options) {
         url.searchParams.append(key, options[key]);

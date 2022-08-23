@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize-yugabytedb");
 //Defining a model 'user'
 
 function setModels(sequelize) {
+  if (!sequelize) return null;
   sequelize.models = {};
   sequelize.models.User = sequelize.define("user", {
     user_id: {

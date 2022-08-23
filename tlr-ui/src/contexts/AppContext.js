@@ -1,14 +1,13 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import getJSON from "../services/rest";
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
+  const [loading, setLoading] = useState(true);
   const [queryLogs, setQueryLogs] = useState([]);
   //default path is /api, other paths include /api-asia, /api-europe, etc
-  const [trafficLocations, setTrafficLocations] = useState([
-    { id: "api", label: "United States", coords: [34.0499998, -118.249999] },
-    { id: "api-asia", label: "Asia", coords: [35.652832, 139.839478] },
-  ]);
+  const [trafficLocations, setTrafficLocations] = useState([]);
   const [trafficLocation, setTrafficLocation] = useState(
     localStorage.hasOwnProperty("trafficLocation")
       ? localStorage.getItem("trafficLocation")
@@ -17,12 +16,60 @@ export function AppProvider({ children }) {
   const [currentDatabase, setCurrentDatabase] = useState(
     localStorage.hasOwnProperty("currentDatabase")
       ? localStorage.getItem("currentDatabase")
-      : 1
+      : "single_region"
   );
-  const handleQueryLogs = (logs, explainAnalyzeResults) => {
+
+  const getDatabases = async () => {
+    try {
+      const db = await getJSON("/api/databases");
+      setDatabases(db.databases);
+      return Promise.resolve();
+    } catch (e) {
+      console.log("error in fetching current database", e);
+    }
+  };
+
+  const getTrafficLocations = async () => {
+    try {
+      const json = await getJSON(`/${trafficLocation}/trafficLocations`);
+      const data = json.data;
+      setTrafficLocations(data);
+      return Promise.resolve();
+    } catch (e) {
+      console.log("error in fetching /trafficLocations", e);
+    }
+  };
+
+  const initialize = async () => {
+    console.log("Initializing traffic locations and databases");
+    await Promise.all([getTrafficLocations(), getDatabases()]);
+    setLoading(false);
+  };
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  useEffect(() => {
+    getNodesForDB();
+  }, [trafficLocation, currentDatabase]);
+
+  const getNodesForDB = async () => {
+    try {
+      const resp = await getJSON(
+        `/${trafficLocation}/databases/${currentDatabase}/nodes`
+      );
+      const nodes = resp.nodes;
+      setDatabaseNodes(nodes);
+    } catch (e) {
+      console.log("error in fetching database nodes", e);
+    }
+  };
+
+  const handleQueryLogs = (logs, explainAnalyzeResults, latency) => {
     const logResult = {
       logs,
       explainAnalyzeResults,
+      latency,
     };
     setQueryLogs((prev) => {
       if (prev.length > 30) {
@@ -34,11 +81,18 @@ export function AppProvider({ children }) {
   };
   const [productsInCart, setProductsInCart] = useState([]);
   const [showExecutionPlan, setShowExecutionPlan] = useState(true);
+  const [databases, setDatabases] = useState([]);
+  const [databaseNodes, setDatabaseNodes] = useState([]);
   return (
     <AppContext.Provider
       value={{
-        queryLogs,
+        databases,
+        setDatabases,
+        databaseNodes,
+        setDatabaseNodes,
         handleQueryLogs,
+        queryLogs,
+        loading,
         trafficLocation,
         setTrafficLocation,
         trafficLocations,

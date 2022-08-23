@@ -5,6 +5,9 @@ import TLRButton from "../../components/tlr_button/TLRButton";
 import { useNavigate } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import { ReactComponent as AppLogo } from "../../assets/yugastore-logo.svg";
+import AppContext from "../../contexts/AppContext";
+import { useContext } from "react";
+import { ReactComponent as LoadingCircles } from "../../yugabyted-ui/assets/Default-Loading-Circles.svg";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -51,12 +54,17 @@ const useStyles = makeStyles((theme) => {
       textAlign: "center",
       width: "80%",
     },
+    loadingCircles: {
+      height: "40px",
+      width: "40px",
+    },
   };
 });
 
 export default function Landing() {
   const classes = useStyles();
   let navigate = useNavigate();
+  const { loading } = useContext(AppContext);
   return (
     <Phone>
       <div className={classes.landingWrapper}>
@@ -65,17 +73,26 @@ export default function Landing() {
           <Typography className={classes.appHeading}>Yuga Bookstore</Typography>
         </div>
         <div className={classes.landingContent}>
-          <Typography color="textSecondary" className={classes.instructions}>
-            Set your phone's location to browse our selection of books.
-          </Typography>
-          <TrafficLocation />
-          <TLRButton
-            styles={{ alignSelf: "center", width: "80%" }}
-            text={"Get Started"}
-            onClick={() => {
-              navigate("/store/products");
-            }}
-          />
+          {loading ? (
+            <LoadingCircles className={classes.loadingCircles} />
+          ) : (
+            <>
+              <Typography
+                color="textSecondary"
+                className={classes.instructions}
+              >
+                Set your phone's location to browse our selection of books.
+              </Typography>
+              <TrafficLocation />
+              <TLRButton
+                styles={{ alignSelf: "center", width: "80%" }}
+                text={"Get Started"}
+                onClick={() => {
+                  navigate("/store/products");
+                }}
+              />
+            </>
+          )}
         </div>
       </div>
     </Phone>

@@ -1,0 +1,11 @@
+[Private]
+10.168.0.2 #Los Angeles
+10.154.0.2 #London
+10.160.0.2 #Mumbai
+10.158.0.2 #Sao Paulo
+10.152.0.2 #Sydney
+10.150.0.2 #Washington, D.C.
+
+[Private:vars]
+ansible_ssh_common_args= '-o ProxyCommand="ssh -W %h:%p -q tlr_user@34.145.82.215"'
+ansible_ssh_extra_args= '-o StrictHostKeyChecking=no'

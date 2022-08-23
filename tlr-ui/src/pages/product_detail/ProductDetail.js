@@ -40,16 +40,19 @@ const useStyles = makeStyles((theme) => {
   };
 });
 export default function ProductDetail(props) {
-  const { currentDatabase, handleQueryLogs, showExecutionPlan } =
-    useContext(AppContext);
+  const {
+    currentDatabase,
+    handleQueryLogs,
+    showExecutionPlan,
+    trafficLocation,
+  } = useContext(AppContext);
   const { setProductsInCart } = props;
   const { productId } = useParams();
   console.log("productId: ", productId);
   const [product, setProduct] = useState();
   const getProduct = useCallback(async () => {
     try {
-      // const json = await getJSON(`/api/products/${productId}/recommendations`);
-      const json = await getJSON(`/api/products/${productId}`, {
+      const json = await getJSON(`/${trafficLocation}/products/${productId}`, {
         database: currentDatabase,
         showExecutionPlan,
       });

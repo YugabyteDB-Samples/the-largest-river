@@ -1,7 +1,13 @@
 const express = require("express");
-require("dotenv").config();
+
+if (process.env.NODE_ENV === "development") require("dotenv").config();
+
+const config = require("config");
 const app = express();
 const cors = require("cors");
+
+const DATABASE_COUNT = config.get("DATABASE_COUNT");
+const PORT = config.get("PRODUCTS_SERVICE_PORT");
 
 // ESM error without dynamic import
 const fetch = (...args) =>
@@ -16,50 +22,67 @@ let { addDatabaseConnection } = require("./db.js");
 const databases = {};
 app.use(function (req, res, next) {
   // console.log("req.query.database: ", req.query.database);
-  req.currentDatabase = databases[req.query.database || 1];
+  req.currentDatabase = databases[req.query.database || "multi_region"];
   // console.log("middleware setting req.currentDatabase: ", req.currentDatabase);
   //TODO: verify that connection to database is valid
   next();
 });
 
+const Databases = config.get("Databases");
+console.log("DATABASES:", Databases);
 const databaseConnections = [];
-for (let i = 1; i < parseInt(process.env.DATABASE_COUNT) + 1; i++) {
-  const host = process.env[`DATABASE_HOST_${i}`];
-  const username = process.env[`DATABASE_USERNAME_${i}`];
-  const password = process.env[`DATABASE_PASSWORD_${i}`];
-  const cert = process.env[`DATABASE_CERT_PATH_${i}`];
-  // console.log("host, username, password, cert", host, username, password, cert);
+for (let i = 0; i < parseInt(DATABASE_COUNT); i++) {
+  const { host, username, password, nodes } = Databases[i];
+  const cert =
+    process.env.NODE_ENV === "production"
+      ? Databases[i].cert
+      : Databases[i].dev_cert;
+  const url = `${nodes[0].zone}.${host}`;
+  console.log("url", url);
   databaseConnections.push(
-    addDatabaseConnection(host, username, password, cert)
+    addDatabaseConnection(url, username, password, cert, i)
   );
 }
-Promise.all(databaseConnections).then((connections) => {
+Promise.allSettled(databaseConnections).then((connections) => {
+  // console.log("Connections: ", connections);
   connections.forEach((connection, i) => {
-    databases[i + 1] = {
-      models: require("./models.js").setModels(connection),
-      sequelize: connection,
+    // console.log("Connection:", connection);
+    const { id, label, sublabel, nodes } = Databases[i];
+    databases[id] = {
+      models:
+        connection.status === "fulfilled"
+          ? require("./models.js").setModels(connection.value)
+          : null,
+      sequelize: connection.value,
 
       tlr_properties: {
-        label: process.env[`DATABASE_LABEL_${i + 1}`],
-        sublabel: process.env[`DATABASE_SUBLABEL_${i + 1}`],
-        coords: process.env[`DATABASE_LATLNG_${i + 1}`],
-        id: i + 1,
+        label,
+        sublabel,
+        nodes,
+        id,
       },
     };
   });
 });
 
+app.get("/api/trafficLocations", async (req, res) => {
+  const trafficLocations = config.get("TrafficLocations");
+  res.json({
+    data: trafficLocations,
+  });
+});
 app.get("/api/clusters", async (req, res) => {
   try {
-    console.log(process.env.YB_MANAGED_API_KEY);
+    const { YB_MANAGED_ACCOUNT_ID, YB_MANAGED_PROJECT_ID, YB_MANAGED_API_KEY } =
+      config.get("YB_MANAGED_ACCOUNT");
     console.log("*** clusters request *** ");
-    const url = `https://cloud.yugabyte.com/api/public/v1/accounts/${process.env.YB_MANAGED_ACCOUNT_ID}/projects/${process.env.YB_MANAGED_PROJECT_ID}/clusters`;
+    const url = `https://cloud.yugabyte.com/api/public/v1/accounts/${YB_MANAGED_ACCOUNT_ID}/projects/${YB_MANAGED_PROJECT_ID}/clusters`;
     console.log("Requesting clusters at: ", url);
     const clusters = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.YB_MANAGED_API_KEY}`,
+        Authorization: `Bearer ${YB_MANAGED_API_KEY}`,
       },
     });
 
@@ -73,6 +96,9 @@ app.get("/api/clusters", async (req, res) => {
 
 app.get("/api/products", async (req, res) => {
   try {
+    console.log("req.currentdatabase", req.currentDatabase);
+    if (!req?.currentDatabase?.sequelize)
+      throw new Error("no database connection for products call");
     let { page = 1, limit = 10, showExecutionPlan = "false" } = req.query;
     page = parseInt(page);
     limit = parseInt(limit);
@@ -80,6 +106,7 @@ app.get("/api/products", async (req, res) => {
     let productsQuery = { limit, offset: (page - 1) * limit };
     let queryLogs;
 
+    let time = Date.now();
     const [products] = await req.currentDatabase.sequelize.query(
       `SELECT * from products LIMIT $1 OFFSET $2`,
       {
@@ -100,43 +127,60 @@ app.get("/api/products", async (req, res) => {
             bind: [req.params.page || 0],
           }
         );
+      time = Date.now() - time;
       explainAnalyzeResults =
         explainAnalyzeResults?.map((res) => res["QUERY PLAN"]) || [];
+    } else {
+      time = Date.now() - time;
     }
 
-    res.json({ page, limit, queryLogs, explainAnalyzeResults, data: products });
+    res.json({
+      page,
+      limit,
+      latency: time,
+      queryLogs,
+      explainAnalyzeResults,
+      data: products,
+    });
   } catch (e) {
     console.log("error in fetching products", e);
-    res.status(400).send({ error: "error" });
+    res.status(400).send({ error: e, data: [] });
   }
 });
 
 app.get("/api/products/:id", async (req, res) => {
-  let queryLogs;
-  const [product] = await req.currentDatabase.sequelize.query(
-    `SELECT * from products where id = $1`,
-    {
-      bind: [req.params.id],
-      logging: (msg) => {
-        queryLogs = msg;
-      },
-    }
-  );
-
-  let [explainAnalyzeResults, metadata] =
-    await req.currentDatabase.sequelize.query(
-      `EXPLAIN ANALYZE select * from products where id = $1`,
+  try {
+    if (!req?.currentDatabase?.sequelize)
+      throw new Error("no database connection for product call");
+    let queryLogs;
+    const [product] = await req.currentDatabase.sequelize.query(
+      `SELECT * from products where id = $1`,
       {
-        bind: [req.params.id || 0],
+        bind: [req.params.id],
+        logging: (msg) => {
+          queryLogs = msg;
+        },
       }
     );
-  explainAnalyzeResults =
-    explainAnalyzeResults?.map((res) => res["QUERY PLAN"]) || [];
 
-  console.log("EXPLAIN ANALYZE results: ", explainAnalyzeResults);
-  console.log("EXPLAIN ANALYZE metadata: ", metadata);
+    let [explainAnalyzeResults, metadata] =
+      await req.currentDatabase.sequelize.query(
+        `EXPLAIN ANALYZE select * from products where id = $1`,
+        {
+          bind: [req.params.id || 0],
+        }
+      );
+    explainAnalyzeResults =
+      explainAnalyzeResults?.map((res) => res["QUERY PLAN"]) || [];
 
-  res.json({ queryLogs, explainAnalyzeResults, data: product[0] });
+    console.log("EXPLAIN ANALYZE results: ", explainAnalyzeResults);
+    console.log("EXPLAIN ANALYZE metadata: ", metadata);
+
+    res.json({ queryLogs, explainAnalyzeResults, data: product[0] });
+  } catch (e) {
+    console.log("error in fetching product", e);
+    res.status(400).send({ error: e, data: {} });
+  }
 });
 
 app.post("/api/orders", async (req, res) => {
@@ -174,6 +218,22 @@ app.get("/api/databases", (req, res) => {
     });
     res.status(200).json({
       databases: returnDBs,
+    });
+  } catch (e) {
+    console.log("error in fetching databases", e);
+  }
+});
+
+app.get("/api/databases/:id/nodes", (req, res) => {
+  try {
+    const key = req.params.id;
+    console.log("key:", key);
+    console.log("databases:", databases);
+    const database = databases[key];
+    const nodes = database.tlr_properties.nodes;
+
+    res.status(200).json({
+      nodes: nodes,
     });
   } catch (e) {
     console.log("error in fetching databases", e);
@@ -235,10 +295,8 @@ app.get("/api/databases", (req, res) => {
 //   }
 // });
 
-app.listen(process.env.PRODUCTS_SERVICE_PORT, () => {
-  console.log(
-    `Products Service listening on ${process.env.PRODUCTS_SERVICE_PORT}`
-  );
+app.listen(PORT, () => {
+  console.log(`Products Service listening on ${PORT}`);
 });
 
 process.on("uncaughtException", (err) => {

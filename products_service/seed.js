@@ -1,5 +1,5 @@
 // Creating database if it doesn't exist
-require("dotenv").config();
+// require("dotenv").config();
 // const Client = require("pg").Client;
 // const fs = require("fs");
 // const config = {
@@ -31,16 +31,16 @@ require("dotenv").config();
 // });
 
 // const sampleProducts = require("./sample-data/products.json");
+const config = require("config");
 const sampleProducts = require("./sample-data/books.json");
 // const { Product, ProductRecommendation } = require("./models");
 let { addDatabaseConnection } = require("./db.js");
 let models, setModels, sequelize;
-addDatabaseConnection(
-  process.env.DATABASE_HOST_1,
-  process.env.DATABASE_USERNAME_1,
-  process.env.DATABASE_PASSWORD_1,
-  process.env.DATABASE_SEED_CERT_PATH_1
-)
+const databases = config.get("Databases");
+const index = 0;
+const { username, password, seed_cert_path } = databases[index];
+const url = "localhost:5001";
+addDatabaseConnection(url, username, password, seed_cert_path, index)
   .then((sequelizeInstance) => {
     require("./models.js").setModels(sequelizeInstance);
     // console.log("this is the sequelize instance", sequelizeInstance);
@@ -60,7 +60,7 @@ async function createTableAndInsert() {
 
   await sequelize.sync({ force: true });
 
-  await sequelizeInstance.models.Product.bulkCreate(sampleProducts.products, {
+  await sequelize.models.Product.bulkCreate(sampleProducts.products, {
     ignoreDuplicates: true,
   });
 
