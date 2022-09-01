@@ -4,18 +4,18 @@ const { DataTypes } = require("sequelize-yugabytedb");
 function setModels(sequelize) {
   if (!sequelize) return null;
   sequelize.models = {};
-  sequelize.models.User = sequelize.define("user", {
-    user_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-    },
-    username: {
-      type: DataTypes.STRING,
-    },
-    country: {
-      type: DataTypes.STRING,
-    },
-  });
+  // sequelize.models.User = sequelize.define("user", {
+  //   user_id: {
+  //     type: DataTypes.INTEGER,
+  //     primaryKey: true,
+  //   },
+  //   username: {
+  //     type: DataTypes.STRING,
+  //   },
+  //   country: {
+  //     type: DataTypes.STRING,
+  //   },
+  // });
   // {
   //   id: "0006923992",
   //   description:
@@ -27,37 +27,43 @@ function setModels(sequelize) {
   //   categories: [["Books"]],
   // };
   //Defining a model 'user'
-  sequelize.models.Product = sequelize.define("product", {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+  sequelize.models.Product = sequelize.define(
+    "product",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+      },
+      country: {
+        type: DataTypes.STRING,
+      },
+      language: {
+        type: DataTypes.STRING,
+      },
+      author: {
+        type: DataTypes.STRING,
+      },
+      imageLink: {
+        type: DataTypes.STRING,
+      },
+      pages: {
+        type: DataTypes.INTEGER,
+      },
+      year: {
+        type: DataTypes.INTEGER,
+      },
+      price: {
+        type: DataTypes.FLOAT,
+      },
     },
-    title: {
-      type: DataTypes.STRING,
-    },
-    country: {
-      type: DataTypes.STRING,
-    },
-    language: {
-      type: DataTypes.STRING,
-    },
-    author: {
-      type: DataTypes.STRING,
-    },
-    imageLink: {
-      type: DataTypes.STRING,
-    },
-    pages: {
-      type: DataTypes.INTEGER,
-    },
-    year: {
-      type: DataTypes.INTEGER,
-    },
-    price: {
-      type: DataTypes.FLOAT,
-    },
-  });
+    {
+      timestamps: false,
+    }
+  );
 
   // "author": "Dante Alighieri",
   // "country": "Italy",
@@ -76,7 +82,7 @@ function setModels(sequelize) {
   // });
 
   sequelize.models.Order = sequelize.define(
-    "Order",
+    "order",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -91,7 +97,7 @@ function setModels(sequelize) {
       },
     },
     {
-      tableName: "Order",
+      timestamps: false,
     }
   );
 

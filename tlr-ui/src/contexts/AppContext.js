@@ -1,9 +1,12 @@
 import { createContext, useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import getJSON from "../services/rest";
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [queryLogs, setQueryLogs] = useState([]);
   //default path is /api, other paths include /api-asia, /api-europe, etc
@@ -51,6 +54,11 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     getNodesForDB();
+
+    // Navigate to products view on Traffic Location or Database change
+    // if not on landing page or initial page load
+    if (location?.pathname != "/" && loading != true)
+      navigate("/store/products", { replace: true });
   }, [trafficLocation, currentDatabase]);
 
   const getNodesForDB = async () => {
@@ -59,7 +67,14 @@ export function AppProvider({ children }) {
         `/${trafficLocation}/databases/${currentDatabase}/nodes`
       );
       const nodes = resp.nodes;
-      setDatabaseNodes(nodes);
+      const connectedNodeIdx = resp.connection_node_index;
+      const isReplicaNode =
+        resp.nodes[resp.connection_node_index].type === "replica";
+      setDatabaseNodes({
+        nodes,
+        connectedNodeIndex: connectedNodeIdx,
+        isReplicaNode,
+      });
     } catch (e) {
       console.log("error in fetching database nodes", e);
     }
@@ -82,7 +97,7 @@ export function AppProvider({ children }) {
   const [productsInCart, setProductsInCart] = useState([]);
   const [showExecutionPlan, setShowExecutionPlan] = useState(true);
   const [databases, setDatabases] = useState([]);
-  const [databaseNodes, setDatabaseNodes] = useState([]);
+  const [databaseNodes, setDatabaseNodes] = useState({});
   return (
     <AppContext.Provider
       value={{

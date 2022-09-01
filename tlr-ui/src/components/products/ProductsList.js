@@ -1,5 +1,6 @@
 import ProductCard from "./ProductCard";
 import { makeStyles } from "@material-ui/core";
+import { v4 as uuidv4 } from "uuid";
 const useStyles = makeStyles((theme) => {
   return {
     productList: {
@@ -17,7 +18,7 @@ export default function ProductsList(props) {
   return (
     <div className={classes.productList}>
       {props.products.map((product, i) => {
-        return <ProductCard info={product} key={product.id} />;
+        return <ProductCard info={product} key={uuidv4()} />;
       })}
     </div>
   );

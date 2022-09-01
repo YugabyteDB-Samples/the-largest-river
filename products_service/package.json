@@ -19,10 +19,11 @@
     "express": "^4.18.1",
     "node-fetch": "^3.2.10",
     "pg": "^8.7.3",
-    "sequelize-yugabytedb": "^1.0.6"
+    "sequelize-yugabytedb": "^1.0.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "nodemon": "^2.0.16"
   }
 }

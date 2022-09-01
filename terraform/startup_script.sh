@@ -10,6 +10,7 @@ if [ ! -f "/etc/initialized_on_startup" ]; then
     sudo npm install pm2 -g
     NODE_APP_INSTANCE=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/instance_id -H "Metadata-Flavor: Google")
     echo "NODE_APP_INSTANCE=${NODE_APP_INSTANCE}" | sudo tee -a /etc/environment
+    echo $NODE_APP_INSTANCE
     echo "NODE_ENV=production" | sudo tee -a /etc/environment
     source /etc/environment
     sudo touch /etc/initialized_on_startup

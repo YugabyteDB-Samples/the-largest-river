@@ -8,21 +8,21 @@ variable "instances" {
   }))
   default = {
     "los_angeles" = {
-      metadata = {instance_id = "los_angeles"}
+      metadata = {instance_id = "los-angeles"}
       startup_script = "startup_script.sh",
       name = "los-angeles"
       zone = "us-west2-a" // Los Angeles, CA
       network_ip = "10.168.0.2"
     },
     "washington_dc" = {
-      metadata = {instance_id = "washington_dc"}
+      metadata = {instance_id = "washington-dc"}
       startup_script = "startup_script.sh",
       name = "washington-dc"
       zone = "us-east4-a" // Ashburn, VA
       network_ip = "10.150.0.2"
     },
     "sao_paulo" = {
-      metadata = {instance_id = "sao_paulo"}
+      metadata = {instance_id = "sao-paulo"}
       startup_script = "startup_script.sh",
       name = "sao-paulo"
       zone = "southamerica-east1-a" // Sao Paulo

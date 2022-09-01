@@ -34,6 +34,20 @@ const useStyles = makeStyles((theme) => {
       height: "350px",
       flex: "1 1 auto",
     },
+    snapToZoom: {
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      zIndex: 999,
+      border: "2px solid rgba(0,0,0,0.2)",
+      borderRadius: "4px",
+      boxShadow: "none",
+
+      "& a": {
+        height: "30px",
+        width: "30px",
+      },
+    },
     legend: {
       display: "flex",
       position: "absolute",
@@ -80,7 +94,8 @@ export default function Map() {
   });
   const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
   const [map, setMap] = useState(null);
-  const featureGroupRef = useRef();
+  const connectionRef = useRef();
+  const allNodesRef = useRef();
 
   const MarkerWithText = ({ text, position, textColor }) => {
     const html = `<div style="width: 100px; background: none; position: relative; left: 20px; bottom: 5px; color: ${textColor}; display:${
@@ -92,14 +107,7 @@ export default function Map() {
   };
   useEffect(() => {
     if (map) {
-      // const legend = L.control({ position: "bottomleft" });
-      // legend.onAdd = () => {
-      //   const div = L.DomUtil.create("div", "info legend");
-      //   div.style.margin = "0";
-      //   div.innerHTML = `<div style='display: flex; gap: 5px; align-items: center; background-color: #FFFFFF; opacity: 0.7; border-top: 1px solid #E9EEF2; border-right: 1px solid #E9EEF2; padding: 5px; font-family: ${"Inter"}, sans-serif; font-style: normal; font-size: 11px; font-weight: 500; line-height: 7px; letter-spacing: 0px;'><div style='height: 10px; width: 10px; border-radius: 20px; background-color: #13a868;'></div><div>Primary Node</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: #7879F1;'></div><div>Phone Location</div><div style='height: 10px; width: 10px; border-radius: 20px; background-color: yellow;'></div><div>Read Replica</div></div>`;
-      //   return div;
-      // };
-      // legend.addTo(map);
+      map.fitBounds(allNodesRef.current.getBounds().pad(0.1));
     }
   }, [map]);
 
@@ -114,12 +122,13 @@ export default function Map() {
   }, [trafficLocation]);
 
   useEffect(() => {
-    if (databaseNodes.length === 0) return;
+    if (databaseNodes?.nodes?.length === undefined) return;
     if (map) {
-      map.fitBounds(featureGroupRef.current.getBounds());
+      map.fitBounds(allNodesRef.current.getBounds().pad(0.1));
     }
 
-    const destination = databaseNodes[0].coords;
+    const destination =
+      databaseNodes.nodes[databaseNodes.connectedNodeIndex].coords;
     const intermediatePoint = getIntermediatePoint(
       trafficOriginMarker.coords[0],
       trafficOriginMarker.coords[1],
@@ -129,25 +138,6 @@ export default function Map() {
     );
     setMapCenter(intermediatePoint);
   }, [databaseNodes, trafficOriginMarker]);
-  // useMemo prevents gif from rerendering
-  // const logoIcon = useMemo(
-  //   () =>
-  //     L.icon({
-  //       iconSize: [48, 80],
-  //       iconAnchor: [24, 40],
-  //       iconUrl: require("./elmo-fire.gif"),
-  //       // iconUrl: "https://c.tenor.com/DXh9ij18IJ0AAAAM/hell-flame.gif",
-  //     }),
-  //   []
-  // );
-
-  const dbIcon = useMemo(() =>
-    L.icon({
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      iconUrl: require("./pngegg.png"),
-    })
-  );
 
   const originLocationIcon = useMemo(() =>
     L.icon({
@@ -156,6 +146,11 @@ export default function Map() {
       iconUrl: OriginLocationIcon,
     })
   );
+
+  const handleSnapToZoom = (e) => {
+    e.preventDefault();
+    if (map) map.fitBounds(connectionRef.current.getBounds().pad(0.1));
+  };
 
   return (
     <div className={classes.mapWrapper}>
@@ -172,53 +167,95 @@ export default function Map() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
-        <FeatureGroup ref={featureGroupRef}>
-          {trafficOriginMarker && (
-            <div key={uuidv4()}>
-              <Marker
-                key={uuidv4()}
-                position={trafficOriginMarker.coords}
-                icon={originLocationIcon}
-              >
-                <Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-              </Marker>
-              <MarkerWithText
-                key={uuidv4()}
-                text={trafficOriginMarker.label}
-                position={trafficOriginMarker.coords}
-                textColor={"#5D5FEF"}
-              />
-            </div>
-          )}
+        <FeatureGroup ref={allNodesRef}>
+          <FeatureGroup ref={connectionRef} key={"connectionRefKey"}>
+            {trafficOriginMarker && (
+              <div key={uuidv4()}>
+                <Marker
+                  key={uuidv4()}
+                  position={trafficOriginMarker.coords}
+                  icon={originLocationIcon}
+                >
+                  <Popup>
+                    A pretty CSS3 popup. <br /> Easily customizable.
+                  </Popup>
+                </Marker>
+                <MarkerWithText
+                  key={uuidv4()}
+                  text={trafficOriginMarker.label}
+                  position={trafficOriginMarker.coords}
+                  textColor={"#5D5FEF"}
+                />
+              </div>
+            )}
 
+            {databaseNodes &&
+              databaseNodes.nodes &&
+              databaseNodes.nodes
+                .filter((node, idx) => idx === databaseNodes.connectedNodeIndex)
+                .map((node) => {
+                  return (
+                    <div key={uuidv4()}>
+                      <CircleMarker
+                        center={node.coords}
+                        radius={5}
+                        color={node.type === "replica" ? "#ED35C5" : "#13A868"}
+                        opacity="0.2"
+                        weight="10"
+                        fill="true"
+                        fillColor={
+                          node.type === "replica" ? "#ED35C5" : "#13A868"
+                        }
+                        fillOpacity="1"
+                      >
+                        <Popup>
+                          A pretty CSS3 popup. <br /> Easily customizable.
+                        </Popup>
+                      </CircleMarker>
+                      <MarkerWithText
+                        text={node.label}
+                        position={node.coords}
+                        textColor={
+                          node.type === "replica" ? "#ED35C5" : "#13A868"
+                        }
+                      />
+                    </div>
+                  );
+                })}
+          </FeatureGroup>
           {databaseNodes &&
-            databaseNodes.map((node) => {
-              return (
-                <div key={uuidv4()}>
-                  <CircleMarker
-                    center={node.coords}
-                    radius={5}
-                    color="#13A868"
-                    opacity="0.2"
-                    weight="10"
-                    fill="true"
-                    fillColor="#13A868"
-                    fillOpacity="1"
-                  >
-                    <Popup>
-                      A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                  </CircleMarker>
-                  <MarkerWithText
-                    text={node.label}
-                    position={node.coords}
-                    textColor={"#13A868"}
-                  />
-                </div>
-              );
-            })}
+            databaseNodes.nodes &&
+            databaseNodes.nodes
+              .filter((node, idx) => idx != databaseNodes.connectedNodeIndex)
+              .map((node) => {
+                return (
+                  <div key={uuidv4()}>
+                    <CircleMarker
+                      center={node.coords}
+                      radius={5}
+                      color={node.type === "replica" ? "#ED35C5" : "#13A868"}
+                      opacity="0.2"
+                      weight="10"
+                      fill="true"
+                      fillColor={
+                        node.type === "replica" ? "#ED35C5" : "#13A868"
+                      }
+                      fillOpacity="1"
+                    >
+                      <Popup>
+                        A pretty CSS3 popup. <br /> Easily customizable.
+                      </Popup>
+                    </CircleMarker>
+                    <MarkerWithText
+                      text={node.label}
+                      position={node.coords}
+                      textColor={
+                        node.type === "replica" ? "#ED35C5" : "#13A868"
+                      }
+                    />
+                  </div>
+                );
+              })}
         </FeatureGroup>
         <MapPolyLine
           databaseNodes={databaseNodes}
@@ -226,6 +263,16 @@ export default function Map() {
           getIntermediatePoint={getIntermediatePoint}
         />
       </MapContainer>
+      <div className={classes.snapToZoom}>
+        <div className="leaflet-control leaflet-bar">
+          <a
+            href="#"
+            onClick={(e) => {
+              handleSnapToZoom(e);
+            }}
+          ></a>
+        </div>
+      </div>
       <div className={classes.legend}>
         <img src={OriginLocationLegendIcon} height={15} width={10} />
         <div>Phone Location</div>

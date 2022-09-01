@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => {
 export default function Cart() {
   const {
     currentDatabase,
+    handleQueryLogs,
     productsInCart,
     setProductsInCart,
     showExecutionPlan,
@@ -60,7 +61,7 @@ export default function Cart() {
   const navigate = useNavigate();
 
   const subtotal = productsInCart.reduce(
-    (previousValue, currentValue) => previousValue + currentValue.price,
+    (previousValue, currentValue) => previousValue + +currentValue.price,
     0
   );
 
@@ -77,6 +78,12 @@ export default function Cart() {
           showExecutionPlan,
         }
       );
+      const queryLogs = res.queryLogs;
+      const explainAnalyzeResults = res.explainAnalyzeResults;
+      const latency = res.latency;
+      if (queryLogs) {
+        handleQueryLogs(queryLogs, explainAnalyzeResults, latency);
+      }
       setProductsInCart([]);
       navigate(`/store/confirmation/${res?.data?.id}`);
     } catch (e) {

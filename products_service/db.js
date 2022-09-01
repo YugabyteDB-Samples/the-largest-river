@@ -1,9 +1,16 @@
 const { Sequelize } = require("sequelize-yugabytedb");
 const fs = require("fs");
 
-async function addDatabaseConnection(url, username, password, certPath, index) {
+async function addDatabaseConnection({
+  url,
+  username,
+  password,
+  certPath,
+  port,
+  type,
+}) {
   console.log(`Changing DB HOST TO: ${url}`);
-  console.log(url, username, password, certPath);
+  // console.log(url, username, password, certPath);
 
   try {
     const cert = fs.readFileSync(certPath).toString();
@@ -14,7 +21,7 @@ async function addDatabaseConnection(url, username, password, certPath, index) {
     if (process.env.NODE_ENV === "development") {
       config = {
         host: "host.docker.internal", // host.docker.internal allows docker container to access the IP of the host machine
-        port: `${5000 + (index || 0)}`,
+        port: port,
         dialect: "postgres",
         dialectOptions: {
           ssl: {
@@ -25,9 +32,22 @@ async function addDatabaseConnection(url, username, password, certPath, index) {
         },
         pool: {
           max: 5,
-          min: 0,
+          min: 1, // Set to one to keep a connection open
           acquire: 30000,
           idle: 10000,
+        },
+        hooks: {
+          async afterConnect(connection) {
+            if (type === "multi_region_with_read_replicas") {
+              console.log("afterConnect hook called!");
+              await connection.query("set yb_read_from_followers = true;");
+              await connection.query(
+                "set session characteristics as transaction read only;"
+              );
+
+              console.log("Setting session variables for follower reads");
+            }
+          },
         },
         // logging: (msg) => logger(msg),
       };
@@ -45,16 +65,29 @@ async function addDatabaseConnection(url, username, password, certPath, index) {
         },
         pool: {
           max: 5,
-          min: 0,
+          min: 1, // Set to one to keep a connection open
           acquire: 30000,
           idle: 10000,
+        },
+        hooks: {
+          async afterConnect(connection) {
+            if (type === "multi_region_with_read_replicas") {
+              console.log("afterConnect hook called!");
+              await connection.query("set yb_read_from_followers = true;");
+              await connection.query(
+                "set session characteristics as transaction read only;"
+              );
+
+              console.log("Setting session variables for follower reads");
+            }
+          },
         },
         // logging: (msg) => logger(msg),
       };
     } else if (process.env.NODE_ENV === "seed") {
       config = {
         host: "localhost",
-        port: `${5000 + (index || 0)}`,
+        port: port,
         dialect: "postgres",
         dialectOptions: {
           ssl: {
@@ -64,7 +97,7 @@ async function addDatabaseConnection(url, username, password, certPath, index) {
           },
         },
         pool: {
-          max: 5,
+          max: 10,
           min: 0,
           acquire: 30000,
           idle: 10000,

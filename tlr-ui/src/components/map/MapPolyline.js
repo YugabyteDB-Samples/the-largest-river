@@ -17,7 +17,7 @@ export default function MapPolyLine(props) {
   const intervalRef = useRef();
   useEffect(() => {
     console.log("UseEffect in Map");
-    if (databaseNodes.length === 0) return;
+    if (databaseNodes?.nodes?.length === undefined) return;
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       setPolyline((prev) => {
@@ -28,7 +28,8 @@ export default function MapPolyLine(props) {
       });
     }
 
-    const destination = databaseNodes[0].coords;
+    const destination =
+      databaseNodes.nodes[databaseNodes.connectedNodeIndex].coords;
 
     intervalRef.current = setInterval(() => {
       setPolyline(({ percentage, points }) => {

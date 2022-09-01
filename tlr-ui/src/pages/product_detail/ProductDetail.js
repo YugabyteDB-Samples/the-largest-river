@@ -37,6 +37,10 @@ const useStyles = makeStyles((theme) => {
     price: {
       color: theme.palette.text.primaryPurple,
     },
+    LoadingCircles: {
+      height: "40px",
+      width: "40px",
+    },
   };
 });
 export default function ProductDetail(props) {
@@ -59,9 +63,10 @@ export default function ProductDetail(props) {
       const data = json.data;
       const queryLogs = json.queryLogs;
       const explainAnalyzeResults = json.explainAnalyzeResults;
+      const latency = json.latency;
 
       if (queryLogs) {
-        handleQueryLogs(queryLogs, explainAnalyzeResults);
+        handleQueryLogs(queryLogs, explainAnalyzeResults, latency);
       }
 
       setProduct(data);
@@ -112,7 +117,7 @@ export default function ProductDetail(props) {
             />
           </>
         ) : (
-          <LoadingCircles />
+          <LoadingCircles className={classes.LoadingCircles} />
         )}
       </div>
     </div>

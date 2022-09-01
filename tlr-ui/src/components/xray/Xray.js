@@ -22,11 +22,54 @@ const useStyles = makeStyles((theme) => {
       marginTop: "10px",
       maxHeight: "300px",
       overflow: "auto",
-      fontFamily: "Menlo-Regular, Courier, monospace",
-      color: theme.palette.grey[900],
+      // fontFamily: "Menlo-Regular, Courier, monospace",
+      fontFamily: "Andale Mono",
+      color: "#031541",
+    },
+    logMessage: {
+      lineHeight: "150%",
+    },
+    prefix: {
+      color: "#5D5FEF",
+    },
+    result: {
+      color: "#0A2972",
     },
   };
 });
+
+function ExplainAnalyzeResult({ message }) {
+  const classes = useStyles();
+
+  let prefix, result;
+
+  if (message.indexOf("Planning Time:") > -1) {
+    prefix = "Planning Time:";
+    result = message.split("Planning Time:")[1];
+  } else if (message.indexOf("Execution Time:") > -1) {
+    prefix = "Execution Time:";
+    result = message.split("Execution Time:")[1];
+  } else if (message.indexOf("Peak Memory Usage:") > -1) {
+    prefix = "Peak Memory Usage:";
+    result = message.split("Peak Memory Usage:")[1];
+  } else if (message.indexOf("Total Latency:") > -1) {
+    prefix = "Total Latency:";
+    result = message.split("Total Latency:")[1];
+  }
+
+  return (
+    <div className={classes.logMessage}>
+      {prefix ? (
+        <>
+          <span className={classes.prefix}>{prefix}</span>
+          <span className={classes.result}>{result}</span>
+        </>
+      ) : (
+        message
+      )}
+    </div>
+  );
+}
 export default function Xray() {
   const classes = useStyles();
   const { queryLogs, showExecutionPlan, setShowExecutionPlan } =
@@ -54,16 +97,23 @@ export default function Xray() {
       <div className={classes.xrayContent} ref={xrayRef}>
         {queryLogs.map((log, i) => {
           return (
-            <div key={i}>
+            <div key={uuidv4()}>
               <div>
                 {"\u003E"}
                 {"       "}
                 {log.logs}
               </div>
               {log.explainAnalyzeResults.map((result) => {
-                return <div key={uuidv4()}>{result}</div>;
+                return <ExplainAnalyzeResult message={result} key={uuidv4()} />;
               })}
-              {log.latency ? <div>Total Latency: {log.latency} ms</div> : ""}
+              {log.latency ? (
+                <ExplainAnalyzeResult
+                  message={`Total Latency: ${log.latency} ms`}
+                  key={uuidv4()}
+                />
+              ) : (
+                ""
+              )}
               <br />
               <br />
             </div>

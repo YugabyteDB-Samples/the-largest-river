@@ -17,6 +17,8 @@ services:
     build: ./products_service
     environment:
       - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=los-angeles
     ports: 
       - "8000:8000"
     volumes:
@@ -29,6 +31,8 @@ services:
     build: ./products_service
     environment:
       - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=washington-dc
     ports: 
       - "8001:8000"
     volumes:
@@ -41,6 +45,8 @@ services:
     build: ./products_service
     environment:
       - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=sao-paulo
     ports: 
       - "8002:8000"
     volumes:
@@ -67,6 +73,8 @@ services:
     build: ./products_service
     environment:
       - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=london
     ports: 
       - "8004:8000"
     volumes:
@@ -80,6 +88,8 @@ services:
     build: ./products_service
     environment:
       - PORT=8000
+      - NODE_ENV=development
+      - NODE_APP_INSTANCE=sydney
     ports: 
       - "8005:8000"
     volumes:

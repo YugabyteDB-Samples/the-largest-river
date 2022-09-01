@@ -1,5 +1,5 @@
 import ProductsList from "../../components/products/ProductsList";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroller";
 import { useEffect, useState, useContext, useCallback } from "react";
 import AppContext from "../../contexts/AppContext";
@@ -7,6 +7,7 @@ import getJSON from "../../services/rest";
 import ProductDetail from "../product_detail/ProductDetail";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import { ReactComponent as LoadingCircles } from "../../yugabyted-ui/assets/Default-Loading-Circles.svg";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -18,18 +19,18 @@ const useStyles = makeStyles((theme) => {
       fontSize: "15px",
     },
     loader: {
-      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
     },
   };
 });
 
 export default function Products() {
+  const location = useLocation();
   const classes = useStyles();
   const [products, setProducts] = useState([]);
   const [productsCount, setProductsCount] = useState(0);
-  const [productsState, setProductsState] = useState({
-    currentPage: 1,
-  });
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     handleQueryLogs,
@@ -38,15 +39,15 @@ export default function Products() {
     productsInCart,
     setProductsInCart,
     showExecutionPlan,
+    databaseNodes,
   } = useContext(AppContext);
 
   const getInfiniteScrollProducts = useCallback(async () => {
     try {
       const json = await getJSON(`/${trafficLocation}/products`, {
-        page: productsState.currentPage
-          ? parseInt(productsState.currentPage)
-          : 1,
+        page: currentPage ? parseInt(currentPage) : 1,
         database: currentDatabase,
+        isReplicaNode: databaseNodes.isReplicaNode,
         showExecutionPlan,
       });
       const { data, page, queryLogs, explainAnalyzeResults, latency } = json;
@@ -59,17 +60,29 @@ export default function Products() {
         return [...prevProducts, ...data];
       });
       setProductsCount(data.count);
-      setProductsState((prevState) => {
-        return { ...prevState, currentPage: prevState.currentPage + 1 };
+      setCurrentPage((currentPage) => {
+        return currentPage + 1;
       });
     } catch (e) {
       console.log("Error in fetching products", e);
     }
-  }, [productsState.currentPage, currentDatabase, showExecutionPlan]);
+  }, [
+    currentPage,
+    currentDatabase,
+    showExecutionPlan,
+    // trafficLocation,
+    databaseNodes,
+  ]);
 
   useEffect(() => {
-    getInfiniteScrollProducts();
-  }, []);
+    setProducts([]);
+    setCurrentPage(1);
+  }, [databaseNodes]);
+
+  useEffect(() => {
+    if (currentPage === 1 && location.pathname === "/store/products")
+      getInfiniteScrollProducts();
+  }, [currentPage, location]);
 
   return (
     <Routes>
@@ -82,11 +95,11 @@ export default function Products() {
             </Typography>
             <InfiniteScroll
               pageStart={1}
-              hasMore={productsState.currentPage <= 10}
-              loadMore={getInfiniteScrollProducts}
+              hasMore={currentPage <= 10}
+              loadMore={() => setTimeout(getInfiniteScrollProducts, 500)}
               loader={
                 <div className={classes.loader} key={0}>
-                  Loading ...
+                  <LoadingCircles />
                 </div>
               }
               useWindow={false}

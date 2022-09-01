@@ -37,10 +37,18 @@ const sampleProducts = require("./sample-data/books.json");
 let { addDatabaseConnection } = require("./db.js");
 let models, setModels, sequelize;
 const databases = config.get("Databases");
-const index = 0;
-const { username, password, seed_cert_path } = databases[index];
-const url = "localhost:5001";
-addDatabaseConnection(url, username, password, seed_cert_path, index)
+const index = 1;
+const { username, password, seed_cert_path, type } = databases[index];
+const url = "localhost";
+const localPort = 5001;
+addDatabaseConnection({
+  url,
+  username,
+  password,
+  certPath: seed_cert_path,
+  port: localPort,
+  type,
+})
   .then((sequelizeInstance) => {
     require("./models.js").setModels(sequelizeInstance);
     // console.log("this is the sequelize instance", sequelizeInstance);
