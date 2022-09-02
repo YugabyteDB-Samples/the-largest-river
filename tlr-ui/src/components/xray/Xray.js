@@ -78,7 +78,6 @@ export default function Xray() {
 
   useEffect(() => {
     xrayRef.current.scrollTop = xrayRef.current.scrollHeight;
-    console.log(xrayRef.current.scrollTop);
   }, [queryLogs]);
   return (
     <div className={classes.xrayWrapper}>

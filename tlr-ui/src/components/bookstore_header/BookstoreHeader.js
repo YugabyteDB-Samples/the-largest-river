@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { ReactComponent as BookstoreTextLogo } from "../../assets/bookstore-text-logo.svg";
 import { ReactComponent as CartLogo } from "../../assets/cart.svg";
+import { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -42,23 +43,64 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       top: "-3px",
       right: "-5px",
+
+      "&.newItemInCart:after": {
+        content: "''",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        display: "block",
+        width: "100%",
+        height: "100%",
+        backgroundColor: `${theme.palette.background.purple}`,
+        borderRadius: "15px",
+        animation:
+          "$pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s infinite",
+      },
+    },
+    "@keyframes pulse-dot": {
+      "0%": {
+        transform: "scale(1)",
+      },
+      "50%": {
+        transform: "scale(1.4)",
+      },
+      "100%": {
+        transform: "scale(1)",
+      },
     },
   };
 });
 export default function BookstoreHeader(props) {
   const { count } = props;
   const classes = useStyles();
+  const [isNewItem, setIsNewItem] = useState(false);
 
+  function handleNewItem() {
+    setIsNewItem(true);
+    setTimeout(function () {
+      setIsNewItem(false);
+    }, 5000);
+  }
+  useEffect(() => {
+    if (count > 0) {
+      handleNewItem();
+    }
+  }, [count]);
   return (
     <div className={classes.bookstoreHeader}>
       <Link to="/store/products" className={classes.bookstoreHeading}>
         <BookstoreTextLogo />
-        {/* <Typography variant="h5">Yuga Bookstore</Typography> */}
       </Link>
       <Link to="/store/cart">
         <div className={classes.cartWidget}>
           <CartLogo className={classes.BsCartPlus} />
-          {count > 0 && <div className={classes.countCircle}></div>}
+          {count > 0 &&
+            (isNewItem ? (
+              <div className={`${classes.countCircle} newItemInCart`}></div>
+            ) : (
+              <div className={classes.countCircle}></div>
+            ))}
         </div>
       </Link>
     </div>
