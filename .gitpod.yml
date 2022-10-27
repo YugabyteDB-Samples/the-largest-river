@@ -17,6 +17,6 @@ tasks:
   - name: Server Start
     command: |
       gp await-port 5433
-      DATABASE_NAME=yugabyte NODE_ENV=gitpod node products_service/seed.js
-      DATABASE_NAME=yugabyte NODE_ENV=gitpod node products_service/server.js
+      DATABASE_NAME=yugabyte NODE_APP_INSTANCE=los-angeles NODE_ENV=gitpod node products_service/seed.js
+      DATABASE_NAME=yugabyte NODE_APP_INSTANCE=los-angeles NODE_ENV=gitpod node products_service/index.js
     openMode: split-right
