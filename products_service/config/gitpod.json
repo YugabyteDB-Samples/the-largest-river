@@ -1,52 +1,51 @@
 {
-    "PRODUCTS_SERVICE_PORT": 8000,
-    "DATABASE_NAME": "yugabyte",
-    "DATABASE_COUNT": 1,
-    "TrafficLocations": [
-      {
-        "id": "los-angeles",
-        "value": "api",
-        "label": "Los Angeles",
-        "coords": [34.0499998, -118.249999]
-      }
-    ],
-  
-    "Databases": [
-      {
-        "id": "single_region",
-        "type": "single_region",
-        "host": "localhost", 
-        "primaryRegion": "us-west2",
-        "username": "yugabyte",
-        "password": "yugabyte",
-        "label": "Single-region, multi-zone",
-        "sublabel": "3 nodes deployed in US West",
-        "nodes": [
-          {
-            "coords": [35.37387, -119.01946],
-            "label": "Bakersfield",
-            "zone": "us-west2",
-            "local_port": 5433
-          },
-          {
-            "coords": [34.95313, -120.43586],
-            "label": "Santa Maria",
-            "zone": "us-west2",
-            "local_port": 5433
-          },
-          {
-            "coords": [32.71742, -117.16277],
-            "label": "San Diego",
-            "zone": "us-west2",
-            "local_port": 5433
-          }
-        ]
-      }
-    ],
-    "node_preferences": {
-      "los-angeles": {
-        "single_region": [0]
-      }
+  "PRODUCTS_SERVICE_PORT": 8000,
+  "DATABASE_NAME": "yugabyte",
+  "DATABASE_COUNT": 1,
+  "TrafficLocations": [
+    {
+      "id": "los-angeles",
+      "value": "api",
+      "label": "Los Angeles",
+      "coords": [34.0499998, -118.249999]
+    }
+  ],
+  "Databases": [
+    {
+      "id": "single_region",
+      "type": "single_region",
+      "host": "localhost", 
+      "primaryRegion": "us-west2",
+      "username": "yugabyte",
+      "password": "yugabyte",
+      "label": "Single-region, multi-zone",
+      "sublabel": "3 nodes deployed in US West",
+      "nodes": [
+        {
+          "coords": [35.37387, -119.01946],
+          "label": "Bakersfield",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [34.95313, -120.43586],
+          "label": "Santa Maria",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [32.71742, -117.16277],
+          "label": "San Diego",
+          "zone": "us-west2",
+          "local_port": 5433
+        }
+      ]
+    }
+  ],
+  "node_preferences": {
+    "los-angeles": {
+      "single_region": [0]
     }
   }
+}
   
