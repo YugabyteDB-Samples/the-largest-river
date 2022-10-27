@@ -104,9 +104,22 @@ async function addDatabaseConnection({
         },
         // logging: (msg) => logger(msg),
       };
+    } else if(process.env.NODE_ENV === "gitpod") {
+      console.log("connecting to db for gitpod")
+      config = {
+        host: "localhost",
+        port: 5433,
+        dialect: "postgres",
+        pool: {
+          max: 10,
+          min: 0,
+          acquire: 30000,
+          idle: 10000,
+        },
+      };
     }
     // console.log("DB Config", config);
-    const connection = new Sequelize("testing_tlr", username, password, config);
+    const connection = new Sequelize(process.env.DATABASE_NAME || "testing_tlr", username, password, config);
     await connection.authenticate();
     console.log("CONNECTION TO DB VERIFIED");
     return connection;
