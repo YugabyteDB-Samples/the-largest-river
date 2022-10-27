@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => {
     },
     productInfo: {
       display: "flex",
+      flex: "1 1 auto",
       flexDirection: "column",
       justifyContent: "space-around",
       alignItems: "center",

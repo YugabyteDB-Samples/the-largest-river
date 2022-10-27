@@ -56,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0
   },
   label: {
-    ...theme.typography.body2
+    ...theme.typography.body2,
+    marginRight: 0
   }
 }));
 
@@ -80,7 +81,7 @@ export const YBToggle: FC<YBToggleProps> = ({ label, labelVariant, FormControlPr
         control={<AntSwitch color="primary" {...props} />}
         labelPlacement="end"
         label={<Typography variant={labelVariant ?? 'body2'}>{label}</Typography>}
-        classes={formLabelClasses}
+        className={formLabelClasses.label}
       />
     </FormControl>
   );

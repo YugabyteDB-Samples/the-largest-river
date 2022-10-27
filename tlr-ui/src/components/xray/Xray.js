@@ -6,7 +6,14 @@ import { YBToggle } from "../../yugabyted-ui/components/YBToggle/YBToggle";
 
 const useStyles = makeStyles((theme) => {
   return {
-    xrayWrapper: {},
+    xrayWrapper: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left: 0,
+      /* min-height: 400px; */
+    },
     headingWrapper: {
       color: theme.palette.grey[700],
       borderBottom: `1px solid ${theme.palette.grey[200]}`,
@@ -20,10 +27,13 @@ const useStyles = makeStyles((theme) => {
     xrayContent: {
       padding: "10px",
       marginTop: "10px",
-      maxHeight: "300px",
       overflow: "auto",
-      // fontFamily: "Menlo-Regular, Courier, monospace",
-      fontFamily: "Andale Mono",
+      position: "absolute",
+      top: "50px",
+      right: "10px",
+      left: "10px",
+      bottom: "0px",
+      fontFamily: "Menlo-Regular, Courier, monospace",
       color: "#031541",
     },
     logMessage: {
@@ -102,13 +112,12 @@ export default function Xray() {
                 {"       "}
                 {log.logs}
               </div>
-              {log.explainAnalyzeResults.map((result) => {
+              {log.explainAnalyzeResults.map((result, i) => {
                 return <ExplainAnalyzeResult message={result} key={uuidv4()} />;
               })}
               {log.latency ? (
                 <ExplainAnalyzeResult
                   message={`Total Latency: ${log.latency} ms`}
-                  key={uuidv4()}
                 />
               ) : (
                 ""

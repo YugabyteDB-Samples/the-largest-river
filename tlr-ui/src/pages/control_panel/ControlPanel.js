@@ -10,8 +10,19 @@ const useStyles = makeStyles((theme) => {
       boxSizing: "border-box",
       margin: "20px 10px",
       maxWidth: "calc(100% - 20px)",
+      height: "calc(100% - 40px)",
+      maxHeight: "calc(100% - 40px)",
+      display: "flex",
+      flexDirection: "column",
     },
-    controlPanelPaper: {},
+    xrayGridItem: {
+      flex: "1 1 auto",
+    },
+    xrayPaper: {
+      position: "relative",
+      minHeight: "400px",
+      height: "100%",
+    },
   };
 });
 
@@ -30,8 +41,8 @@ export default function DisabledTabs() {
           <Map />
         </Paper>
       </Grid>
-      <Grid item>
-        <Paper className={classes.controlPanelPaper}>
+      <Grid item className={classes.xrayGridItem}>
+        <Paper className={classes.xrayPaper}>
           <Xray />
         </Paper>
       </Grid>

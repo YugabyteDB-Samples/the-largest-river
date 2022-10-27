@@ -38,7 +38,6 @@ CREATE TABLE products_syd
     PRIMARY KEY(id, geo_partition))
     FOR VALUES IN ('SYD') TABLESPACE australia_southeast1_tablespace;
 
-
 /* pgcrypto includes gen_random_uuid function */
 
 CREATE TABLE orders (
@@ -62,7 +61,7 @@ CREATE TABLE orders_lon
     PARTITION OF orders
     (id, total, products, geo_partition,
     PRIMARY KEY(id, geo_partition))
-    FOR VALUES IN ('LON') TABLESPACE us_west1_tablespace;
+    FOR VALUES IN ('LON') TABLESPACE europe_west2_tablespace;
 CREATE TABLE orders_mum
     PARTITION OF orders
     (id, total, products, geo_partition,

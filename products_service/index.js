@@ -76,8 +76,17 @@ for (let i = 0; i < parseInt(DATABASE_COUNT); i++) {
   console.log("local port: ", port);
   const url = `${preferredNode.zone}.${host}`;
   console.log("url", url);
+  const requiresTunnel = preferredNode.requires_tunnel;
   databaseConnections.push(
-    addDatabaseConnection({ url, username, password, certPath, port, type })
+    addDatabaseConnection({
+      url,
+      username,
+      password,
+      certPath,
+      port,
+      type,
+      requiresTunnel,
+    })
   );
 }
 Promise.allSettled(databaseConnections).then((connections) => {
@@ -263,10 +272,10 @@ app.post("/api/orders", async (req, res) => {
     }
 
     const time = Date.now();
-    const dbRes = await req.currentDatabase.sequelize.query(
+    const [data, status] = await req.currentDatabase.sequelize.query(
       dbType === "geo_partitioned"
-        ? `INSERT INTO orders (total, products, geo_partition, id) values ($1,$2,$3,$4)`
-        : `INSERT INTO orders (total, products) values ($1,$2)`,
+        ? `INSERT INTO orders (total, products, geo_partition, id) values ($1,$2,$3,$4) returning id`
+        : `INSERT INTO orders (total, products) values ($1,$2) returning id`,
       {
         bind:
           dbType === "geo_partitioned"
@@ -287,8 +296,8 @@ app.post("/api/orders", async (req, res) => {
     if (showExecutionPlan) {
       [explainAnalyzeResults] = await req.currentDatabase.sequelize.query(
         dbType === "geo_partitioned"
-          ? `INSERT INTO orders (total, products, geo_partition, id) values ($1,$2,$3,$4)`
-          : `INSERT INTO orders (total, products) values ($1,$2)`,
+          ? `EXPLAIN ANALYZE INSERT INTO orders (total, products, geo_partition, id) values ($1,$2,$3,$4)`
+          : `EXPLAIN ANALYZE INSERT INTO orders (total, products) values ($1,$2)`,
         {
           bind:
             dbType === "geo_partitioned"
@@ -309,7 +318,7 @@ app.post("/api/orders", async (req, res) => {
 
     res
       .status(201)
-      .json({ data: dbRes, queryLogs, explainAnalyzeResults, latency });
+      .json({ data: data[0], queryLogs, explainAnalyzeResults, latency });
   } catch (e) {
     console.log("error in /api/orders", e);
     res.status(400).send({ error: e, data: {} });
@@ -359,61 +368,6 @@ app.get("/api/databases/:id/nodes", (req, res) => {
     console.log("error in fetching databases", e);
   }
 });
-
-// app.get("/api/products/:id/recommendations", async (req, res) => {
-//   let queryLogs;
-
-//   //   const product = await Product.findAll({
-//   //     // where: { id: req.params.id },
-//   //     // order: [["id", "asc"]],
-//   //     limit: 10,
-//   //     include: ["recommendations"],
-//   //     logging: (msg) => {
-//   //       queryLogs = msg;
-//   //     },
-//   //   });
-
-//   const [results, metadata] = await req.currentDatabase.sequelize.query(
-//     `select * from products p where p.id in (select pr."recommendationId" from product_recommendations pr where pr."productId" = $1)`,
-//     {
-//       bind: [req.params.id],
-//       logging: (msg) => {
-//         queryLogs = msg;
-//       },
-//     }
-//   );
-
-//   let [explainAnalyzeResults, explainAnalyzeMetadata] =
-//     await req.currentDatabase.sequelize.query(
-//       `EXPLAIN ANALYZE select * from products p where p.id in (select pr."recommendationId" from product_recommendations pr where pr."productId" = $1)`,
-//       {
-//         bind: [req.params.id],
-//       }
-//     );
-
-//   explainAnalyzeResults =
-//     explainAnalyzeResults?.map((res) => res["QUERY PLAN"]) || [];
-
-//   console.log("EXPLAIN ANALYZE results: ", explainAnalyzeResults);
-//   console.log("EXPLAIN ANALYZE metadata: ", explainAnalyzeMetadata);
-
-//   console.log("product", results);
-
-//   res.json({ queryLogs, explainAnalyzeResults, data: results });
-// });
-
-// app.get("/api/database-config", (req, res) => {
-//   const { database = 1 } = req.query;
-//   try {
-//     res.status(200).json({
-//       id: parseInt(database),
-//       label: process.env[`DATABASE_LABEL_${database}`],
-//       coords: process.env[`DATABASE_LATLNG_${database}`],
-//     });
-//   } catch (e) {
-//     console.log("error in fetching database config", e);
-//   }
-// });
 
 app.listen(PORT, () => {
   console.log(`Products Service listening on ${PORT}`);

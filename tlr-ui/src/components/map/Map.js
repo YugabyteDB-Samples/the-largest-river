@@ -175,10 +175,15 @@ export default function Map() {
                   key={uuidv4()}
                   position={trafficOriginMarker.coords}
                   icon={originLocationIcon}
+                  eventHandlers={{
+                    click: (e) => {
+                      handleSnapToZoom(e.originalEvent);
+                    },
+                  }}
                 >
-                  <Popup>
+                  {/* <Popup>
                     A pretty CSS3 popup. <br /> Easily customizable.
-                  </Popup>
+                  </Popup> */}
                 </Marker>
                 <MarkerWithText
                   key={uuidv4()}
@@ -208,12 +213,13 @@ export default function Map() {
                         }
                         fillOpacity="1"
                       >
-                        <Popup>
+                        {/* <Popup>
                           A pretty CSS3 popup. <br /> Easily customizable.
-                        </Popup>
+                        </Popup> */}
                       </CircleMarker>
+
                       <MarkerWithText
-                        text={node.label}
+                        // text={node.label}
                         position={node.coords}
                         textColor={
                           node.type === "replica" ? "#ED35C5" : "#13A868"
@@ -242,12 +248,13 @@ export default function Map() {
                       }
                       fillOpacity="1"
                     >
-                      <Popup>
+                      {/* <Popup>
                         A pretty CSS3 popup. <br /> Easily customizable.
-                      </Popup>
+                      </Popup> */}
                     </CircleMarker>
+
                     <MarkerWithText
-                      text={node.label}
+                      // text={node.label}
                       position={node.coords}
                       textColor={
                         node.type === "replica" ? "#ED35C5" : "#13A868"
@@ -263,7 +270,7 @@ export default function Map() {
           getIntermediatePoint={getIntermediatePoint}
         />
       </MapContainer>
-      <div className={classes.snapToZoom}>
+      {/* <div className={classes.snapToZoom}>
         <div className="leaflet-control leaflet-bar">
           <a
             href="#"
@@ -272,7 +279,7 @@ export default function Map() {
             }}
           ></a>
         </div>
-      </div>
+      </div> */}
       <div className={classes.legend}>
         <img src={OriginLocationLegendIcon} height={15} width={10} />
         <div>Phone Location</div>

@@ -17,7 +17,7 @@ if [ ! -f "/etc/initialized_on_startup" ]; then
 else
     # Executed on restarts
     source /etc/environment
-    cd /home/products_service && npm run production
+    cd /home/products_service && NODE_ENV=$NODE_ENV NODE_APP_INSTANCE=$NODE_APP_INSTANCE sudo pm2 start index.js --name node-app
 fi
 
 # Executed during the first VM start as well as on restarts

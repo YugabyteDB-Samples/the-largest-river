@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => {
       minWidth: "400px",
     },
     dropdownBox: {
-      minWidth: "400px",
+      width: "400px",
       border: `1px solid ${theme.palette.grey[300]}`,
       borderRadius: "10px",
       padding: theme.spacing(1),
@@ -41,8 +41,12 @@ const useStyles = makeStyles((theme) => {
     dropdownMenuItem: {
       flexDirection: "column",
       height: "auto",
-      minWidth: "400px",
+      width: "400px",
       alignItems: "flex-start",
+    },
+    sublabel: {
+      textOverflow: "wrap",
+      whiteSpace: "normal",
     },
   };
 });
@@ -90,7 +94,11 @@ export default function DatabaseConfig() {
             onClick={() => handleDatabaseChanged(id)}
           >
             <Typography variant="body2">{label}</Typography>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              className={classes.sublabel}
+            >
               {sublabel}
             </Typography>
           </MenuItem>
