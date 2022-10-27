@@ -6,15 +6,13 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: Install dependencies
-    init: cd products_service && npm install && cd ..
-
   - name: YugabyteDB Shell
     command: |
       gp await-port 5433
       ysqlsh
     openMode: split-right
   - name: Server Start
+    init: cd products_service && npm install && cd ..
     command: |
       gp await-port 5433
       DATABASE_NAME=yugabyte NODE_APP_INSTANCE=los-angeles NODE_ENV=gitpod node products_service/seed.js
