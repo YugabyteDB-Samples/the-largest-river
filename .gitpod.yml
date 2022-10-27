@@ -8,13 +8,13 @@ image:
 tasks:
   - name: YugabyteDB Shell
     command: |
-      gp await-port 5433
+      gp ports await 5433
       ysqlsh
     openMode: split-right
   - name: Server Start
     init: cd products_service && npm install && cd ..
     command: |
-      gp await-port 5433
+      gp ports await 5433
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod node products_service/seed.js
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod node products_service/index.js
     openMode: split-right
