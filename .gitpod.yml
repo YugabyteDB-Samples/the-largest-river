@@ -7,17 +7,16 @@ image:
 
 tasks:
   - name: Install dependencies
-    init: cd server && npm install && cd ..
+    init: cd products_service && npm install && cd ..
 
   - name: YugabyteDB Shell
     command: |
       gp await-port 5433
-      ysqlsh -f /data/init.sql
       ysqlsh
     openMode: split-right
   - name: Server Start
     command: |
       gp await-port 5433
-      DATABASE_NAME=yugabyte NODE_ENV=gitpod node server/seed.js
-      DATABASE_NAME=yugabyte NODE_ENV=gitpod node server/server.js
+      DATABASE_NAME=yugabyte NODE_ENV=gitpod node products_service/seed.js
+      DATABASE_NAME=yugabyte NODE_ENV=gitpod node products_service/server.js
     openMode: split-right
