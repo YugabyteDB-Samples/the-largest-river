@@ -18,3 +18,6 @@ tasks:
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod node products_service/seed.js
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod node products_service/index.js
     openMode: split-right
+  - name: Client Start
+    init: cd tlr_ui && npm install
+    command: cd tlr_ui && npm run start
