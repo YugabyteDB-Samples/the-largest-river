@@ -1,13 +1,15 @@
 // options: { logger: logHandlerFunction }
 export default async function getJSON(baseURL, options) {
   try {
-    let url = new URL(
-      `http://${
-        process.env.NODE_ENV === "production"
-          ? window.location.hostname
-          : "localhost"
-      }${baseURL}`
-    );
+    let root;
+    if (process.env.REACT_APP_ENV_IS_GITPOD) {
+      root = process.env.REACT_APP_GITPOD_SERVER_URL;
+    } else if (process.env.NODE_ENV === "development") {
+      root = "http://localhost";
+    } else if (process.env.NODE_ENV === "production") {
+      root = window.location.hostname;
+    }
+    let url = new URL(`${root}${baseURL}`);
     if (options) {
       for (const key in options) {
         url.searchParams.append(key, options[key]);
@@ -30,13 +32,15 @@ export default async function getJSON(baseURL, options) {
 export async function postJSON(baseURL = "", data = {}, options) {
   // Default options are marked with *
   try {
-    let url = new URL(
-      `http://${
-        process.env.NODE_ENV === "production"
-          ? window.location.hostname
-          : "localhost"
-      }${baseURL}`
-    );
+    let root;
+    if (process.env.REACT_APP_ENV_IS_GITPOD) {
+      root = process.env.REACT_APP_GITPOD_SERVER_URL;
+    } else if (process.env.NODE_ENV === "development") {
+      root = "http://localhost";
+    } else if (process.env.NODE_ENV === "production") {
+      root = window.location.hostname;
+    }
+    let url = new URL(`${root}${baseURL}`);
     if (options) {
       for (const key in options) {
         url.searchParams.append(key, options[key]);

@@ -12,7 +12,7 @@ addDatabaseConnection({
   url,
   username,
   password,
-  certPath: seed_cert_path,
+  // certPath: seed_cert_path,
   port: localPort,
   type,
 })
