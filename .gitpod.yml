@@ -33,10 +33,11 @@ ports:
 
 tasks:
   - name: YugabyteDB Cluster
-    command: |
-      yugabyted start --base_dir=$STORE/node1 --listen=127.0.0.1
-      yugabyted start --base_dir=$STORE/node2 --listen=127.0.0.2 --join=127.0.0.1 
-      yugabyted start --base_dir=$STORE/node3 --listen=127.0.0.3 --join=127.0.0.1
+    # adding two more nodes to the cluster. 
+    # The first node is started from 'gitpod/workspace-yugabytedb' Docker image on $HOST that is set to 127.0.0.1 by default.
+    command: | 
+      yugabyted start --base_dir=$STORE/node2 --listen=127.0.0.2 --join=$HOST 
+      yugabyted start --base_dir=$STORE/node3 --listen=127.0.0.3 --join=$HOST
 
   - name: YugabyteDB Shell
     command: |
