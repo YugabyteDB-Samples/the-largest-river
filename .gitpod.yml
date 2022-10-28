@@ -10,6 +10,13 @@ ports:
     onOpen: open-preview
   - port: 8000
     visibility: public
+    onOpen: ignore
+  - port: 5433
+    visibility: private
+    onOpen: ignore
+  - port: 7000
+    visibility: private
+    onOpen: open-browser
 
 tasks:
   - name: YugabyteDB Shell
