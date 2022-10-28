@@ -32,11 +32,18 @@ ports:
     onOpen: ignore
 
 tasks:
+  - name: YugabyteDB Cluster
+    command: |
+      yugabyted start --base_dir=$STORE/node1 --listen=127.0.0.1
+      yugabyted start --base_dir=$STORE/node2 --listen=127.0.0.2 --join=127.0.0.1 
+      yugabyted start --base_dir=$STORE/node3 --listen=127.0.0.3 --join=127.0.0.1
+
   - name: YugabyteDB Shell
     command: |
       gp ports await 5433
       ysqlsh
     openMode: split-right
+
   - name: Server Start
     init: cd products_service && npm install && cd ..
     command: |
@@ -44,6 +51,7 @@ tasks:
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod node products_service/seed.js
       DATABASE_NAME=yugabyte NODE_CONFIG_DIR=products_service/config NODE_ENV=gitpod NODE_APP_INSTANCE=los-angeles node products_service/index.js
     openMode: split-right
+
   - name: Client Start
     init: cd tlr-ui && npm install
     command: |
