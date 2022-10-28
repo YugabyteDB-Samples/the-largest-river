@@ -10,7 +10,7 @@ ports:
   - port: 3000 # The application frontend
     onOpen: open-browser
   - port: 7000 # YugabyteDB UI Console
-    onOpen: open-browser  
+    onOpen: notify
 
   # Disable notifications about the following ports
   - port: 8000
