@@ -14,6 +14,6 @@ The application can be started in several environments.
 
 | Deployment Type                      | Description                                                                                                                         |
 | ------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------- |
-|[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/YugabyteDB-Samples/the-largest-river) | A sandboxed environment for running The Largest River in the cloud. Fork this repository to utilize this option with write access.
+|[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/dmagda/the-largest-river) | A sandboxed environment for running The Largest River in the cloud. Fork this repository to utilize this option with write access.
 | [Your Laptop](local_deployment.md)   | Deploy the entire app with all the components (React.js, Node.js, YugabyteDB) on your local machine.                                |
 | [Google Cloud](gcloud_deployment.md) | Deploy the application in the cloud native way across multiple geographic location using Google Cloud infrastructure and resources. |
