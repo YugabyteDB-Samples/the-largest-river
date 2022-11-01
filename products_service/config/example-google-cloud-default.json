@@ -1,0 +1,217 @@
+{
+  "PRODUCTS_SERVICE_PORT": 8000,
+  "DATABASE_NAME": "yugabyte",
+  "DATABASE_COUNT": 3,
+  "TrafficLocations": [
+    {
+      "id": "los-angeles",
+      "value": "api",
+      "label": "Los Angeles",
+      "coords": [34.0499998, -118.249999]
+    },
+    {
+      "id": "washington-dc",
+      "value": "api-washington-dc",
+      "label": "Washington, DC",
+      "coords": [38.8976, -77.02617]
+    },
+    {
+      "id": "sao-paulo",
+      "value": "api-sao-paulo",
+      "label": "São Paulo",
+      "coords": [-22.07027, -48.43339]
+    },
+    {
+      "id": "london",
+      "value": "api-london",
+      "label": "London",
+      "coords": [51.28933, -0.24406]
+    },
+    {
+      "id": "mumbai",
+      "value": "api-mumbai",
+      "label": "Mumbai",
+      "coords": [18.97335, 72.8281]
+    },
+    {
+      "id": "sydney",
+      "value": "api-sydney",
+      "label": "Sydney",
+      "coords": [-33.86984, 151.20828]
+    }
+  ],
+
+  "Databases": [
+    {
+      "id": "single_region",
+      "type": "single_region",
+      "host": "DB_HOST",
+      "primaryRegion": "DB_PRIMARY_REGION",
+      "username": "USERNAME",
+      "password": "PASSWORD",
+      "cert": "./path/to/root/certificate",
+      "dev_cert": "./path/to/root/certificate",
+      "seed_cert_path": "./path/to/root/certificate",
+      "label": "Single-region, multi-zone",
+      "sublabel": "3 nodes deployed in US West",
+      "nodes": [
+        {
+          "coords": [35.37387, -119.01946],
+          "label": "Bakersfield",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [34.95313, -120.43586],
+          "label": "Santa Maria",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [32.71742, -117.16277],
+          "label": "San Diego",
+          "zone": "us-west2",
+          "local_port": 5433
+        }
+      ]
+    },
+    {
+      "id": "multi_region",
+      "type": "multi_region_with_read_replicas",
+      "host": "DB_HOST",
+      "primaryRegion": "DB_PRIMARY_REGION",
+      "username": "USERNAME",
+      "password": "PASSWORD",
+      "cert": "./path/to/root/certificate",
+      "dev_cert": "./path/to/root/certificate",
+      "seed_cert_path": "./path/to/root/certificate",
+      "label": "Multi-region, multi-zone w/ Read Replicas",
+      "sublabel": "3 nodes deployed in US West, US Central and US East",
+      "nodes": [
+        {
+          "coords": [41.59103, -93.60467],
+          "label": "Des Moines",
+          "zone": "us-central1",
+          "local_port": 5001
+        },
+        {
+          "coords": [45.52025, -122.67419],
+          "label": "Portland",
+          "zone": "us-west1",
+          "local_port": 5002
+        },
+        {
+          "coords": [39.29088, -76.61076],
+          "label": "Baltimore",
+          "zone": "us-east4",
+          "local_port": 5003
+        },
+        {
+          "coords": [-22.90556, -47.06083],
+          "label": "Campinas",
+          "zone": "rr-southamerica-east1",
+          "local_port": 5004,
+          "type": "replica"
+        },
+        {
+          "coords": [53.47949, -2.24511],
+          "label": "Manchester",
+          "zone": "rr-europe-west2",
+          "local_port": 5005,
+          "type": "replica"
+        },
+        {
+          "coords": [13.08369, 80.27019],
+          "label": "Chennai",
+          "zone": "rr-asia-south1",
+          "local_port": 5006,
+          "type": "replica"
+        },
+        {
+          "coords": [-35.29759, 149.10127],
+          "label": "Canberra",
+          "zone": "rr-australia-southeast1",
+          "local_port": 5007,
+          "type": "replica"
+        }
+      ]
+    },
+    {
+      "id": "geo_partitioned",
+      "type": "geo_partitioned",
+      "host": "DB_HOST",
+      "primaryRegion": "DB_PRIMARY_REGION",
+      "username": "USERNAME",
+      "password": "PASSWORD",
+      "cert": "./path/to/root/certificate",
+      "dev_cert": "./path/to/root/certificate",
+      "seed_cert_path": "./path/to/root/certificate",
+      "label": "Geo-partitioned",
+      "sublabel": "5 nodes deployed in US West, South America East, Europe West, Asia South and Australia Southeast",
+      "nodes": [
+        {
+          "coords": [45.52025, -122.67419],
+          "label": "Portland",
+          "zone": "us-west1",
+          "local_port": 5008
+        },
+        {
+          "coords": [-22.90556, -47.06083],
+          "label": "Campinas",
+          "zone": "southamerica-east1",
+          "local_port": 5009
+        },
+        {
+          "coords": [53.47949, -2.24511],
+          "label": "Manchester",
+          "zone": "europe-west2",
+          "local_port": 5010
+        },
+        {
+          "coords": [13.08369, 80.27019],
+          "label": "Chennai",
+          "zone": "asia-south1",
+          "local_port": 5011
+        },
+        {
+          "coords": [-35.29759, 149.10127],
+          "label": "Canberra",
+          "zone": "australia-southeast1",
+          "local_port": 5012
+        }
+      ]
+    }
+  ],
+  "node_preferences": {
+    "los-angeles": {
+      "single_region": [0],
+      "multi_region": [1, 0, 2],
+      "geo_partitioned": [0]
+    },
+    "washington-dc": {
+      "single_region": [0],
+      "multi_region": [2, 1, 0],
+      "geo_partitioned": [0]
+    },
+    "sao-paulo": {
+      "single_region": [0],
+      "multi_region": [3, 2, 1, 0],
+      "geo_partitioned": [1]
+    },
+    "london": {
+      "single_region": [0],
+      "multi_region": [4, 2, 1, 0],
+      "geo_partitioned": [2]
+    },
+    "mumbai": {
+      "single_region": [0],
+      "multi_region": [5, 2, 1, 0],
+      "geo_partitioned": [3]
+    },
+    "sydney": {
+      "single_region": [0],
+      "multi_region": [6, 2, 1, 0],
+      "geo_partitioned": [4]
+    }
+  }
+}

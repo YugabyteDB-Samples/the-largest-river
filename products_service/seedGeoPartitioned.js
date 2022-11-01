@@ -1,7 +1,7 @@
 const pg = require("pg");
 const config = {
   user: "admin",
-  database: "testing_tlr",
+  database: "yugabyte",
   host: "localhost",
   password: "password",
   port: 5008,
@@ -42,7 +42,7 @@ const seedDb = async () => {
     console.log("inserted products into db");
     process.exit(1);
   } catch (e) {
-    console.log("error in creating database testing_tlr", e);
+    console.log("error in seeding database", e);
   }
 };
 

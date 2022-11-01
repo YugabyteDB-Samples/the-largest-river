@@ -13,25 +13,25 @@ async function addDatabaseConnection({
   // console.log(url, username, password, certPath);
 
   try {
-    
     let config;
     console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-    
+
     let cert;
-    if (process.env.NODE_ENV != "gitpod") cert = fs.readFileSync(certPath).toString();
+    if (process.env.NODE_ENV != "gitpod")
+      cert = fs.readFileSync(certPath).toString();
 
     if (process.env.NODE_ENV === "development") {
       config = {
         host: "host.docker.internal", // host.docker.internal allows docker container to access the IP of the host machine
         port: port,
         dialect: "postgres",
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false, // Error if set to true - reason: ConnectionError [SequelizeConnectionError]: Hostname/IP does not match certificate's altnames: Host: host.docker.internal. is not in the cert's altnames
-            ca: cert,
-          },
-        },
+        // dialectOptions: {
+        //   ssl: {
+        //     require: true,
+        //     rejectUnauthorized: false, // Error if set to true - reason: ConnectionError [SequelizeConnectionError]: Hostname/IP does not match certificate's altnames: Host: host.docker.internal. is not in the cert's altnames
+        //     ca: cert,
+        //   },
+        // },
         pool: {
           max: 5,
           min: 1, // Set to one to keep a connection open
@@ -84,30 +84,27 @@ async function addDatabaseConnection({
             }
           },
         },
-        // logging: (msg) => logger(msg),
       };
     } else if (process.env.NODE_ENV === "seed") {
       config = {
-        host: "localhost",
+        host: url || "localhost",
         port: port,
         dialect: "postgres",
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-            ca: cert,
-          },
-        },
+        // dialectOptions: {
+        //   ssl: {
+        //     require: false,
+        //     rejectUnauthorized: false,
+        //     ca: cert,
+        //   },
+        // },
         pool: {
           max: 10,
           min: 0,
           acquire: 30000,
           idle: 10000,
         },
-        // logging: (msg) => logger(msg),
       };
-    } else if(process.env.NODE_ENV === "gitpod") {
-      console.log("connecting to db for gitpod")
+    } else if (process.env.NODE_ENV === "gitpod") {
       config = {
         host: "localhost",
         port: 5433,
@@ -120,9 +117,12 @@ async function addDatabaseConnection({
         },
       };
     }
-    // console.log("DB Config", config);
-    console.log(process.env.DATABASE_NAME, username,password,config)
-    const connection = new Sequelize(process.env.DATABASE_NAME || "testing_tlr", username, password, config);
+    const connection = new Sequelize(
+      process.env.DATABASE_NAME || "yugabyte",
+      username || "yugabyte",
+      password || "yugabyte",
+      config
+    );
     await connection.authenticate();
     console.log("CONNECTION TO DB VERIFIED");
     return connection;

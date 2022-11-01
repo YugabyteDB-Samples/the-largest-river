@@ -8,9 +8,8 @@ The instruction is prepared for Unix-based systems. Feel free to submit a pull-r
 <!-- vscode-markdown-toc -->
 
 - [Local Application Deployment](#local-application-deployment)
-  - [Prerequisite](#prerequisite)
+  - [Prerequisites](#prerequisites)
   - [Architecture](#architecture)
-  - [Create YugabyteDB Cluster](#create-a-yugabytedb-cluster)
   - [Create Configuration File](#create-configuration-file)
   - [Seed Database](#seed-database)
 
@@ -25,29 +24,19 @@ The instruction is prepared for Unix-based systems. Feel free to submit a pull-r
 - Install Node v16 ([NVM](https://github.com/nvm-sh/nvm) recommended)
 - Install [Docker and Docker Desktop](https://docs.docker.com/get-docker/)
 - Install [YugabyteDB](https://docs.yugabyte.com/preview/quick-start/#install-yugabytedb) locally
-- Start a [Multi-Node Cluster](https://docs.yugabyte.com/preview/quick-start/#install-yugabytedb)
+- Start a [Multi-Node Cluster](https://docs.yugabyte.com/preview/quick-start/#start-a-local-multi-node-cluster)
 
 ## Architecture
 
-- Frontend - React.js
+- Frontend - ReactJS
 - Backend Services - Node.js
 - Reverse Proxy - NGINX
 - Database - YugabyteDB
 - Infrastructure - Docker / Docker-Compose
 
-## Create a YugabyteDB Cluster
-
-Using the `ysqlsh` shell, create a database called `testing_tlr`
-
-```
-bin/ysqlsh -h 127.0.0.1  -U yugabyte -d yugabyte
-
-> CREATE DATABASE testing_tlr;
-```
-
 ## Create Configuration File
 
-Under the `/products_service/config` directory, refer to the file called temp-local-deployment.json.
+Under the `/products_service/config` directory, refer to the file called `example-local-default.json`.
 
 Copy this file in the same directory and rename it `default.json`, adjusting any properties as necessary.
 

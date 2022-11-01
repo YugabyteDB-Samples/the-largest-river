@@ -11,10 +11,6 @@ const DATABASE_COUNT = config.get("DATABASE_COUNT");
 const PORT = config.get("PRODUCTS_SERVICE_PORT");
 const NODE_APP_INSTANCE = process.env.NODE_APP_INSTANCE;
 
-// ESM error without dynamic import
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
-
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
@@ -23,7 +19,6 @@ let { addDatabaseConnection } = require("./db.js");
 // database connections are initialized on boot
 const databases = {};
 app.use(function (req, res, next) {
-  // console.log("req.query.database: ", req.query.database);
   req.currentDatabase = databases[req.query.database || "multi_region"];
   req.databaseType = req.currentDatabase?.tlr_properties.type;
 
@@ -52,7 +47,6 @@ app.use(function (req, res, next) {
         break;
     }
   }
-  // console.log("middleware setting req.currentDatabase: ", req.currentDatabase);
   //TODO: verify that connection to database is valid
   next();
 });
@@ -90,9 +84,7 @@ for (let i = 0; i < parseInt(DATABASE_COUNT); i++) {
   );
 }
 Promise.allSettled(databaseConnections).then((connections) => {
-  // console.log("Connections: ", connections);
   connections.forEach((connection, i) => {
-    // console.log("Connection:", connection);
     const { id, label, sublabel, nodes, type } = Databases[i];
     databases[id] = {
       models:
@@ -117,28 +109,6 @@ app.get("/api/trafficLocations", async (req, res) => {
   res.json({
     data: trafficLocations,
   });
-});
-app.get("/api/clusters", async (req, res) => {
-  try {
-    const { YB_MANAGED_ACCOUNT_ID, YB_MANAGED_PROJECT_ID, YB_MANAGED_API_KEY } =
-      config.get("YB_MANAGED_ACCOUNT");
-    console.log("*** clusters request *** ");
-    const url = `https://cloud.yugabyte.com/api/public/v1/accounts/${YB_MANAGED_ACCOUNT_ID}/projects/${YB_MANAGED_PROJECT_ID}/clusters`;
-    console.log("Requesting clusters at: ", url);
-    const clusters = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${YB_MANAGED_API_KEY}`,
-      },
-    });
-
-    const json = await clusters.json();
-
-    res.json(json);
-  } catch (e) {
-    console.log("error in /api/cluster", e);
-  }
 });
 
 app.get("/api/products", async (req, res) => {

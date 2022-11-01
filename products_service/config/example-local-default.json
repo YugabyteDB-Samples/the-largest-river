@@ -1,0 +1,108 @@
+{
+  "PRODUCTS_SERVICE_PORT": 8000,
+  "DATABASE_NAME": "yugabyte",
+  "DATABASE_COUNT": 1,
+  "TrafficLocations": [
+    {
+      "id": "los-angeles",
+      "value": "api",
+      "label": "Los Angeles",
+      "coords": [34.0499998, -118.249999]
+    },
+    {
+      "id": "washington-dc",
+      "value": "api-washington-dc",
+      "label": "Washington, DC",
+      "coords": [38.8976, -77.02617]
+    },
+    {
+      "id": "sao-paulo",
+      "value": "api-sao-paulo",
+      "label": "São Paulo",
+      "coords": [-22.07027, -48.43339]
+    },
+    {
+      "id": "london",
+      "value": "api-london",
+      "label": "London",
+      "coords": [51.28933, -0.24406]
+    },
+    {
+      "id": "mumbai",
+      "value": "api-mumbai",
+      "label": "Mumbai",
+      "coords": [18.97335, 72.8281]
+    },
+    {
+      "id": "sydney",
+      "value": "api-sydney",
+      "label": "Sydney",
+      "coords": [-33.86984, 151.20828]
+    }
+  ],
+
+  "Databases": [
+    {
+      "id": "single_region",
+      "type": "single_region",
+      "host": "localhost",
+      "primaryRegion": "us-west2",
+      "username": "yugabyte",
+      "password": "yugabyte",
+      "label": "Single-region, multi-zone",
+      "sublabel": "3 nodes deployed in US West",
+      "nodes": [
+        {
+          "coords": [35.37387, -119.01946],
+          "label": "Bakersfield",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [34.95313, -120.43586],
+          "label": "Santa Maria",
+          "zone": "us-west2",
+          "local_port": 5433
+        },
+        {
+          "coords": [32.71742, -117.16277],
+          "label": "San Diego",
+          "zone": "us-west2",
+          "local_port": 5433
+        }
+      ]
+    }
+  ],
+  "node_preferences": {
+    "los-angeles": {
+      "single_region": [0],
+      "multi_region": [1, 0, 2],
+      "geo_partitioned": [0]
+    },
+    "washington-dc": {
+      "single_region": [0],
+      "multi_region": [2, 1, 0],
+      "geo_partitioned": [0]
+    },
+    "sao-paulo": {
+      "single_region": [0],
+      "multi_region": [3, 2, 1, 0],
+      "geo_partitioned": [1]
+    },
+    "london": {
+      "single_region": [0],
+      "multi_region": [4, 2, 1, 0],
+      "geo_partitioned": [2]
+    },
+    "mumbai": {
+      "single_region": [0],
+      "multi_region": [5, 2, 1, 0],
+      "geo_partitioned": [3]
+    },
+    "sydney": {
+      "single_region": [0],
+      "multi_region": [6, 2, 1, 0],
+      "geo_partitioned": [4]
+    }
+  }
+}
