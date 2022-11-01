@@ -77,9 +77,6 @@ server {
                 proxy_pass http://10.152.0.2:8000/api;
         }
 
-        # location /espn {
-        #         rewrite ^/espn(.*)$ https://www.espn.com/$1 redirect;
-        # }
         # pass PHP scripts to FastCGI server
         
         #location ~ \.php$ {

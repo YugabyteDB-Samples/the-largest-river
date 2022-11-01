@@ -11,6 +11,7 @@ Follow this instruction if you wish to run the entire application with all the c
   - [Create Database Clusters](#create-database-clusters)
   - [Seed Databases](#seed-databases)
   - [Provision Application Infrastructure](#provision-application-infrastructure)
+  - [Manually Provision NGINX Server](#manually-provision-nginx-server)
   - [Deploy and Run Application Services](#deploy-and-run-application-services)
 
 <!-- vscode-markdown-toc-config
@@ -49,7 +50,11 @@ Copy this file in the same directory and rename it `default.json`, adjusting any
 
 ## Create Database Clusters
 
-This application utilizes 3 database deployments. Log in to YugabyteDB Managed and create - 1 single-region, multi-zone cluster with nodes in `us-west2` - 1 multi-region, multi-zone cluster with nodes in `us-central1`, `us-west1` and `us-east4` with read replicas in `southamerica-east1`, `europe-west2`, `asia-south1` and `australia-southeast1` - 1 geo-partioned cluster with nodes in `us-west1`, `southamerica-east1`, `europe-west2`, `asia-south1`, `australia-southeast1`
+This application utilizes 3 database deployments. Log in to YugabyteDB Managed and create
+
+- 1 single-region, multi-zone cluster with nodes in `us-west2`
+- 1 multi-region, multi-zone cluster with nodes in `us-central1`, `us-west1` and `us-east4` with read replicas in `southamerica-east1`, `europe-west2`, `asia-south1` and `australia-southeast1`
+- 1 geo-partioned cluster with nodes in `us-west1`, `southamerica-east1`, `europe-west2`, `asia-south1`, `australia-southeast1`
 
 ## Seed Databases
 
@@ -86,6 +91,42 @@ Now, port localhost:5000 is securely tunneled to our database. In another termin
 Create a project in [Google Cloud](https://cloud.google.com/) named `the-largest-river`. This application utilizes Terraform to deploy the necessary infrastructure for its API services. It would be helpful to familiarize yourself with the [Google Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/getting_started) for Terraform prior to proceeding.
 
 You'll need to download the JSON key file associated with your account in order to use Terraform.
+
+## Manually Provision NGINX Server
+
+This application uses an NGINX proxy server to send requests to its API services. This currently must be set up manually. In your Google Cloud project, start by provisioning an `Ubuntu, 20.04 LTS` machine.
+
+Once this machine is up and running, SSH in and run the following:
+
+```
+sudo apt update
+sudo apt install nginx
+sudo apt-get install apache2-utils
+```
+
+Our NGINX server has two responsibilities. Not only is it our entrypoint to connect to our API services, but it's also used to serve our UI.
+
+Inside of the `tlr-ui` directory, run
+
+```
+npm run build
+
+//Using the Google Cloud CLI, copy the contents of the build to the remote server
+gcloud compute scp  --zone us-west1-b --project the-largest-river --recurse ./build/* root@nginx-entry-point:/var/www/html
+```
+
+Now, inside of our `nginx` directory, run:
+
+```
+gcloud compute scp  --zone us-west1-b --project the-largest-river ./default root@nginx-entry-point:/etc/nginx/sites-available/default
+```
+
+The NGINX server is ready to be restarted and put to use. Inside of your virtual machine, run:
+
+```
+sudo systemctl status nginx
+sudo systemctl restart nginx
+```
 
 ## Deploy and Run Application Services
 
