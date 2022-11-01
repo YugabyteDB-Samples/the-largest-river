@@ -22,7 +22,7 @@ Follow this instruction if you wish to run the entire application with all the c
 
 ## Prerequisites
 
-- Install [Terraform] (https://www.terraform.io/downloads)
+- Install [Terraform](https://www.terraform.io/downloads)
 - Install [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 - Sign up for [YugabyteDB Managed](https://www.yugabyte.com/managed/)
 
