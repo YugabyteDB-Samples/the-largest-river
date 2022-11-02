@@ -2,6 +2,12 @@
 
 Follow this instruction if you wish to run the entire application with all the components in the cloud. These instructions are prepared for deployment in the Google Cloud. Feel free to create a pull request for running on other cloud providers.
 
+This application uses 3 [YugabyteDB Managed](https://www.yugabyte.com/managed/) database clusters, with different configurations.
+
+![Single-Region, Multi-Zone](https://user-images.githubusercontent.com/2041330/199381181-81733e06-a276-46ab-a23c-543d9cdb276f.png)
+![Multi-Region, Multi-Zone with Read Replicas](https://user-images.githubusercontent.com/2041330/199381419-57eb1bdd-6185-413d-bc62-88a1e88341dc.png)
+![Geo-Partitioned](https://user-images.githubusercontent.com/2041330/199381206-ad1a21f2-c669-4a93-b146-9e7aa413bc20.png)
+
 <!-- vscode-markdown-toc -->
 
 - [Google Cloud Application Deployment](#google-cloud-application-deployment)
