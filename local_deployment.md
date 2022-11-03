@@ -1,7 +1,7 @@
 # Local Application Deployment
-![Local Deployment Architecture](https://user-images.githubusercontent.com/2041330/199386937-9c5e8bee-ddbc-48ca-9cdc-913be590c77e.png)
-Follow this instruction if you wish to run the entire application with all the components on your local machine.
-The instruction is prepared for Unix-based systems. Feel free to submit a pull-request suggesting Windows-specific instructions.
+![Local Deployment Architecture](https://user-images.githubusercontent.com/2041330/199638551-21a8a8f7-b4f6-4956-9839-dbb37d4b3879.png)
+
+Follow this instruction if you wish to run the entire application with all the components on your local machine using Docker and Docker-Compose.
 
 <!-- vscode-markdown-toc -->
 
@@ -18,14 +18,9 @@ The instruction is prepared for Unix-based systems. Feel free to submit a pull-r
 <!-- /vscode-markdown-toc -->
 
 ## Prerequisites
-
-- Install Node v16 ([NVM](https://github.com/nvm-sh/nvm) recommended)
 - Install [Docker and Docker Desktop](https://docs.docker.com/get-docker/)
-- Install [YugabyteDB](https://docs.yugabyte.com/preview/quick-start/#install-yugabytedb) locally
-- Start a [Multi-Node Cluster](https://docs.yugabyte.com/preview/quick-start/#start-a-local-multi-node-cluster)
 
 ## Architecture
-
 - Frontend - ReactJS
 - Backend Services - Node.js
 - Reverse Proxy - NGINX
@@ -38,14 +33,6 @@ Under the `/products_service/config` directory, refer to the file called `exampl
 
 Copy this file in the same directory and rename it `default.json`, adjusting any properties as necessary.
 
-## Seed Database
-
-From the project root, inside of your terminal, run
-
-```
-node products_service/seed.js
-```
-
 ## Run Application Services
 
 This application runs locally via Docker-Compose. In your terminal, run
@@ -56,3 +43,12 @@ docker compose up
 
 to build and run your api services and when everything is up and running visit the app at
 [localhost](localhost).
+
+<img width="1572" alt="Screen Shot 2022-11-02 at 7 37 38 PM" src="https://user-images.githubusercontent.com/2041330/199637813-65df20de-20e9-478a-8456-9b2de1bb98cf.png">
+
+
+You can also view the YugabyteDB UI Console at [localhost:7000](http://localhost:7000).
+
+<img width="1584" alt="Screen Shot 2022-11-02 at 7 36 17 PM" src="https://user-images.githubusercontent.com/2041330/199637751-616d19ff-e474-4d17-956c-fe672c53052c.png">
+
+
