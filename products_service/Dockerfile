@@ -13,10 +13,13 @@
 FROM node:16.15.1-alpine
 COPY . /app
 WORKDIR /app
-# ENV PORT=81
+
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
-COPY /certs /app/certs
+
+# only needed when connecting to YB Managed nodes
+# COPY /certs /app/certs
+
 RUN npm install
 RUN apk update && apk add bash
 
