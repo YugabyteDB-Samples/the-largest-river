@@ -1,6 +1,4 @@
 #!/bin/bash
-wait-for-it host.docker.internal:5433 --timeout=300 --strict
-wait-for-it host.docker.internal:7000 --timeout=300 --strict
-sleep 30
+until psql -h host.docker.internal -p 5433 -U yugabyte -c 'show server_version' ; do sleep 1 ; done 2>/dev/null
 [ "$NODE_APP_INSTANCE" = los-angeles ] && npm run seed
 npm start

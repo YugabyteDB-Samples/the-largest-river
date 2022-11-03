@@ -22,10 +22,7 @@ COPY package-lock.json /app/package-lock.json
 
 RUN npm install
 RUN apk update && apk add bash
-
-# Add 'wait-for-it' to check upstream availability
-COPY wait-for-it.sh /usr/local/bin/wait-for-it
-RUN ["chmod", "+x", "/usr/local/bin/wait-for-it"]
+RUN apk add postgresql-client
 
 # Add entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
