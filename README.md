@@ -2,6 +2,8 @@
 
 This project is a bookstore that leverages multiple database configurations. A control panel contains a map display of database nodes and an x-ray panel with information about database queries and latencies. The application is built on React.js, Node.js and YugabyteDB.
 
+<img width="1242" alt="Screen Shot 2022-11-01 at 7 45 35 PM" src="https://user-images.githubusercontent.com/2041330/199383391-4a7f5d7d-7147-4439-ad39-f2a788e4dde4.png">
+
 ## Dev Journal
 
 This is an ongoing project, so, expect the source code and description to change significantly over the time. The development journey is documented in the following series:

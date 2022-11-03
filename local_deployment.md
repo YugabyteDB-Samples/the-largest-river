@@ -1,7 +1,5 @@
-## This is still a work in progress
-
 # Local Application Deployment
-
+![Local Deployment Architecture](https://user-images.githubusercontent.com/2041330/199386937-9c5e8bee-ddbc-48ca-9cdc-913be590c77e.png)
 Follow this instruction if you wish to run the entire application with all the components on your local machine.
 The instruction is prepared for Unix-based systems. Feel free to submit a pull-request suggesting Windows-specific instructions.
 
