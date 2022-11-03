@@ -16,11 +16,8 @@ async function addDatabaseConnection({
     let config;
     console.log("process.env.NODE_ENV", process.env.NODE_ENV);
 
-    let cert;
-    if (process.env.NODE_ENV != "gitpod")
-      cert = fs.readFileSync(certPath).toString();
-
     if (process.env.NODE_ENV === "development") {
+      // let cert = cert = fs.readFileSync(certPath).toString();
       config = {
         host: "host.docker.internal", // host.docker.internal allows docker container to access the IP of the host machine
         port: port,
@@ -54,6 +51,7 @@ async function addDatabaseConnection({
         // logging: (msg) => logger(msg),
       };
     } else if (process.env.NODE_ENV === "production") {
+      let cert = (cert = fs.readFileSync(certPath).toString());
       config = {
         host: url,
         port: "5433",
@@ -87,8 +85,8 @@ async function addDatabaseConnection({
       };
     } else if (process.env.NODE_ENV === "seed") {
       config = {
-        host: url || "localhost",
-        port: port,
+        host: url || "host.docker.internal",
+        port: 5433,
         dialect: "postgres",
         // dialectOptions: {
         //   ssl: {
@@ -123,6 +121,7 @@ async function addDatabaseConnection({
       password || "yugabyte",
       config
     );
+
     await connection.authenticate();
     console.log("CONNECTION TO DB VERIFIED");
     return connection;

@@ -6,7 +6,7 @@ let models, setModels, sequelize;
 const databases = config.get("Databases");
 const index = 0;
 const { username, password, seed_cert_path, type } = databases[index];
-const url = "127.0.0.1";
+const url = "host.docker.internal";
 const localPort = 5433;
 addDatabaseConnection({
   url,
