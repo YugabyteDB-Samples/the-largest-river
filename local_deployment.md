@@ -47,7 +47,7 @@ to build and run your api services and when everything is up and running visit t
 <img width="1572" alt="Screen Shot 2022-11-02 at 7 37 38 PM" src="https://user-images.githubusercontent.com/2041330/199637813-65df20de-20e9-478a-8456-9b2de1bb98cf.png">
 
 
-You can also view the YugabyteDB UI Console at [localhost:7000](http://localhost:7000).
+You can also view the YugabyteDB UI Console at [localhost:7001](http://localhost:7001).
 
 <img width="1584" alt="Screen Shot 2022-11-02 at 7 36 17 PM" src="https://user-images.githubusercontent.com/2041330/199637751-616d19ff-e474-4d17-956c-fe672c53052c.png">
 
