@@ -41,7 +41,14 @@ This application runs locally via Docker-Compose. In your terminal, run
 docker compose up
 ```
 
-to build and run your api services and when everything is up and running visit the app at
+to build and run your api services. If you are running on Linux, you may use an alternative compose file,
+which might work better for you:
+
+```
+docker compose -f docker-compose-linux.yaml up
+```
+
+When everything is up and running, visit the app at
 [localhost:8080](http://localhost:8080).
 
 <img width="1572" alt="Screen Shot 2022-11-02 at 7 37 38 PM" src="https://user-images.githubusercontent.com/2041330/199637813-65df20de-20e9-478a-8456-9b2de1bb98cf.png">
