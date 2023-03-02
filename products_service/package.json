@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "preinstall": "if [ \"$USER\" = root ]; then npm i nodemon -g; fi",
+    "preinstall": "npm i nodemon -g",
     "start": "NODE_ENV=development nodemon index.js",
     "production": "NODE_ENV=production nodemon index.js",
     "seed": "NODE_ENV=seed node seed.js",

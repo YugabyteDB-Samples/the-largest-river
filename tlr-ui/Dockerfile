@@ -16,7 +16,7 @@ COPY --chown=node:node package.json .
 COPY --chown=node:node package-lock.json .
 
 # RUN npm install --legacy-peer-deps
-RUN npm install
+RUN npm ci --ignore-scripts
 COPY --chown=node:node . .
 
 CMD exec npm run start

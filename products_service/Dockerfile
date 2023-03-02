@@ -24,7 +24,7 @@ COPY --chown=node:node package-lock.json .
 # only needed when connecting to YB Managed nodes
 # COPY /certs /app/certs
 
-RUN npm install
+RUN npm ci --ignore-scripts
 COPY --chown=node:node . .
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
