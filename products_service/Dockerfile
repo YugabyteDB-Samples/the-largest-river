@@ -13,7 +13,6 @@
 FROM node:16.15.1-alpine
 
 RUN apk update && apk add bash postgresql-client
-RUN npm i nodemon -g
 
 USER node
 WORKDIR /app
@@ -24,7 +23,7 @@ COPY --chown=node:node package-lock.json .
 # only needed when connecting to YB Managed nodes
 # COPY /certs /app/certs
 
-RUN npm ci --ignore-scripts
+RUN npm ci
 COPY --chown=node:node . .
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
