@@ -9,11 +9,14 @@
 # CMD npm run start
 
 FROM node:16.15.1-alpine
-COPY . /app
+
+USER node
 WORKDIR /app
-COPY package.json/ ./
-COPY package-lock.json ./
-COPY ./ ./
+COPY --chown=node:node package.json .
+COPY --chown=node:node package-lock.json .
+
 # RUN npm install --legacy-peer-deps
-RUN npm install
-CMD npm run start
+RUN npm ci
+COPY --chown=node:node . .
+
+CMD exec npm run start

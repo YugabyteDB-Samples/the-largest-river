@@ -193,6 +193,7 @@ services:
               --master_addresses=yb-master-0:7100,yb-master-1:7100,yb-master-2:7100
               --replication_factor=3
               --rpc_connection_timeout_ms=15000
+              "
     ports:
       - "7003:7000"
     depends_on:
@@ -211,6 +212,7 @@ services:
               --tserver_master_addrs=yb-master-0:7100,yb-master-1:7100,yb-master-2:7100 
               --ysql_num_shards_per_tserver=2
               --rpc_connection_timeout_ms=15000
+              "
     ports:
       - "9002:9000"
       - "5435:5433"

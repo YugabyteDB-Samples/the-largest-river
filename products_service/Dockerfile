@@ -11,22 +11,19 @@
 # CMD npm start
 
 FROM node:16.15.1-alpine
-COPY . /app
+
+RUN apk update && apk add bash postgresql-client
+
+USER node
 WORKDIR /app
 
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json
+COPY --chown=node:node package.json .
+COPY --chown=node:node package-lock.json .
 
 # only needed when connecting to YB Managed nodes
 # COPY /certs /app/certs
 
-RUN npm install
-RUN apk update && apk add bash
-RUN apk add postgresql-client
+RUN npm ci
+COPY --chown=node:node . .
 
-# Add entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
-
-ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
-CMD []
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

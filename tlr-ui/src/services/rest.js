@@ -5,7 +5,7 @@ export default async function getJSON(baseURL, options) {
     if (process.env.REACT_APP_ENV_IS_GITPOD) {
       root = process.env.REACT_APP_GITPOD_SERVER_URL;
     } else if (process.env.NODE_ENV === "development") {
-      root = "http://localhost:8080";
+      root = `http://${process.env.REACT_APP_HOST || "localhost"}:8080`;
     } else if (process.env.NODE_ENV === "production") {
       root = window.location.hostname;
     }
@@ -36,7 +36,7 @@ export async function postJSON(baseURL = "", data = {}, options) {
     if (process.env.REACT_APP_ENV_IS_GITPOD) {
       root = process.env.REACT_APP_GITPOD_SERVER_URL;
     } else if (process.env.NODE_ENV === "development") {
-      root = "http://localhost:8080";
+      root = `http://${process.env.REACT_APP_HOST || "localhost"}:8080`;
     } else if (process.env.NODE_ENV === "production") {
       root = window.location.hostname;
     }
