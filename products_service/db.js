@@ -51,7 +51,7 @@ async function addDatabaseConnection({
         // logging: (msg) => logger(msg),
       };
     } else if (process.env.NODE_ENV === "production") {
-      let cert = (cert = fs.readFileSync(certPath).toString());
+      let cert = fs.readFileSync(certPath).toString();
       config = {
         host: url,
         port: "5433",
