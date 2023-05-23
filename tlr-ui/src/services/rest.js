@@ -2,12 +2,15 @@
 export default async function getJSON(baseURL, options) {
   try {
     let root;
+    if (!window.location.origin) {
+      window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
     if (process.env.REACT_APP_ENV_IS_GITPOD) {
       root = process.env.REACT_APP_GITPOD_SERVER_URL;
     } else if (process.env.NODE_ENV === "development") {
       root = `http://${process.env.REACT_APP_HOST || "localhost"}:8080`;
     } else if (process.env.NODE_ENV === "production") {
-      root = window.location.hostname;
+      root = window.location.origin;
     }
     let url = new URL(`${root}${baseURL}`);
     if (options) {
@@ -33,12 +36,15 @@ export async function postJSON(baseURL = "", data = {}, options) {
   // Default options are marked with *
   try {
     let root;
+    if (!window.location.origin) {
+      window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
     if (process.env.REACT_APP_ENV_IS_GITPOD) {
       root = process.env.REACT_APP_GITPOD_SERVER_URL;
     } else if (process.env.NODE_ENV === "development") {
       root = `http://${process.env.REACT_APP_HOST || "localhost"}:8080`;
     } else if (process.env.NODE_ENV === "production") {
-      root = window.location.hostname;
+      root = window.location.origin;
     }
     let url = new URL(`${root}${baseURL}`);
     if (options) {
