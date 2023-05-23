@@ -42,7 +42,7 @@ variable "instances" {
       zone = "asia-south1-a" // Mumbai, India
       network_ip = "10.160.0.2"
     },
-    "syndey" = {
+    "sydney" = {
       metadata = {instance_id = "sydney" }
       startup_script = "startup_script.sh",
       name = "sydney"
